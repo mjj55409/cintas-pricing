@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="cintas-pricing" default="build" basedir=".">
+	
+<!--  <property name="author" value="${user.name}"/> -->
+  <property name="author" value="Michael Josephson"/>	
+	<property name="sourcedir" value="${basedir}/src"/>
+  <property name="builddir" value="${basedir}/bin"/>
+	<property name="ipcapi" value="${basedir}/lib_api"/>
+	<property name="jardest" value="../"/>
+	<property name="ipcversion" value="700.32" />
+	<property name="jarname" value="${jardest}${ant.project.name}.jar" />
+
+	<path id="cintas-pricing.classpath">
+	  <pathelement location="bin"/>
+	  <pathelement location="lib_api"/>
+	  <pathelement location="lib_vmc_api/base_services_stripped_api.jar"/>
+  </path>
+	
+	<tstamp>
+    <format property="buildtime" pattern="yyyyMMddHHmmss" />
+  </tstamp>
+
+	<target name="clean">
+		<delete dir="${builddir}" />
+		<delete file="${jarname}" />
+	</target>
+	
+	<target name="init">
+		<mkdir dir="${builddir}"/>
+	</target>
+	
+	<target name="compile" depends="init" >
+		<javac srcdir="${sourcedir}"
+			     destdir="${builddir}"
+			     source="1.4"
+			     includeantruntime="false" 
+			     listfiles="true" >
+		  <classpath refid="cintas-pricing.classpath"/>
+			<compilerarg value="-Xlint:-options" />
+	  </javac>
+	</target>
+	
+  <target name="build" depends="compile">
+  	<jar destfile="${jarname}">
+      <fileset dir="${builddir}" />
+  		<fileset dir="${sourcedir}" includes="**/*.java" />
+  		<manifest>
+  			<attribute name="Specification-Title" value="SAP Internet Pricing and Configurator Userexits"/>
+  			<attribute name="userexits-Implementation-Description" value="${ant.project.name}" />
+  			<attribute name="userexits-Implementation-Version" value="${ipcversion}.${buildtime}" />
+  			<attribute name="userexits-Implementation-Author" value="${author}" />
+  		</manifest>
+  	</jar>
+  </target>
+
+</project>
+
