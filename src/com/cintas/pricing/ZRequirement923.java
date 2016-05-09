@@ -1,8 +1,3 @@
-/**
- * @author Jolly Khanna (jollykh@yahoo.com)
- * @version 1.0
- */
-
 package com.cintas.pricing;
 
 import com.sap.spe.condmgnt.customizing.IAccess;
@@ -12,15 +7,9 @@ import com.sap.spe.condmgnt.finding.userexit.RequirementAdapter;
 
 public class ZRequirement923 extends RequirementAdapter {
 
-	public boolean checkRequirement(IConditionFindingManagerUserExit item,
-			IStep step, IAccess access) {
-		
-		String sizePremium = item.getAttributeValue("SIZE PREMIUM") != null 
-				? item.getAttributeValue("SIZE PREMIUM") : "";
-				
-		if (sizePremium.equals("X"))
-			return true;
-		
-		return false;
-	}
+  public boolean checkRequirement(IConditionFindingManagerUserExit item,
+      IStep step, IAccess access) {
+
+    return (item.getAttributeValue(CintasConstants.Attributes.SIZE_PREMIUM).equals(CintasConstants.ABAP_TRUE));
+  }
 }

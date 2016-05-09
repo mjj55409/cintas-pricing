@@ -1,8 +1,3 @@
-/**
- * @author Jolly Khanna (jollykh@yahoo.com)
- * @version 1.0
- */
-
 package com.cintas.pricing;
 
 import com.sap.spe.condmgnt.customizing.IAccess;
@@ -12,9 +7,9 @@ import com.sap.spe.condmgnt.finding.userexit.RequirementAdapter;
 
 public class ZRequirement924 extends RequirementAdapter {
 	
-	public boolean checkRequirement(IConditionFindingManagerUserExit item,
-			IStep step, IAccess access) {
-		
-	  return (item.getAttributeValue("VAR DEL CYCLE").length() > 0);
-	}
+  public boolean checkRequirement(IConditionFindingManagerUserExit item,
+      IStep step, IAccess access) {
+
+    return (!CintasConstants.IsAttributeInitial(item, CintasConstants.Attributes.VARIABLE_DELIVERY));
+  }
 }

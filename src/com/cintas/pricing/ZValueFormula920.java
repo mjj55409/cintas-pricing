@@ -13,10 +13,10 @@ import com.sap.spe.pricing.transactiondata.userexit.ValueFormulaAdapter;
 
 public class ZValueFormula920 extends ValueFormulaAdapter {
 
-	public BigDecimal overwriteConditionValue(IPricingItemUserExit pricingItem,
-			IPricingConditionUserExit pricingCondition) {
-		
-		// STUB: THIS CODE IS NOT COMPLETE
-		return null;
-	}
+  public BigDecimal overwriteConditionValue(IPricingItemUserExit pricingItem,
+      IPricingConditionUserExit pricingCondition) {
+
+    // STUB: THIS CODE IS NOT COMPLETE
+    return null;
+  }
 }

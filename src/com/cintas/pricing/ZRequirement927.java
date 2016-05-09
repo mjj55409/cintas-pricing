@@ -1,8 +1,3 @@
-/**
- * @author Jolly Khanna (jollykh@yahoo.com)
- * @version 1.0
- */
-
 package com.cintas.pricing;
 
 import com.sap.spe.condmgnt.customizing.IAccess;
@@ -12,16 +7,20 @@ import com.sap.spe.condmgnt.finding.userexit.RequirementAdapter;
 
 public class ZRequirement927 extends RequirementAdapter {
 
-	public boolean checkRequirement(IConditionFindingManagerUserExit item,
-			IStep step, IAccess access) {
-		
-		String usage = item.getAttributeValue("USAGE") != null
-				? item.getAttributeValue("USAGE") : "";
-				
-		// Requirement: Usage is B, L, R, or X
-		if ("BLRX".indexOf(usage) >= 0)
-			return true;
-				
-		return false;
-	}
+  public boolean checkRequirement(IConditionFindingManagerUserExit item,
+      IStep step, IAccess access) {
+
+    String usage = item.getAttributeValue(CintasConstants.Attributes.USAGE);
+    
+    if (usage.equals(CintasConstants.Usage.BUYBACK))
+      return true;
+    if (usage.equals(CintasConstants.Usage.LOST))
+      return true;
+    if (usage.equals(CintasConstants.Usage.DESTROY))
+      return true;
+    if (usage.equals(CintasConstants.Usage.CHARGES))
+      return true;
+
+    return false;
+  }
 }
