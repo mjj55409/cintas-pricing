@@ -1,8 +1,3 @@
-/**
- * @author Michael Josephson
- * @version 1.0
- */
-
 package com.cintas.pricing;
 
 import java.math.BigDecimal;
