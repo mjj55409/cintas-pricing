@@ -75,13 +75,13 @@ public class ZBaseFormula906 extends BaseFormulaAdapter {
           new BigDecimal(ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.PRICE_MAX)) : new BigDecimal("0"));	
 
       // Improper storage of price min/price max fields when the record currency is USD
-      if (ruleCondition.getCalculationType() == PricingCustomizingConstants.CalculationType.FIXED_AMOUNT) {
-        if (ruleCondition.getConditionRate().getUnitName().equals(CintasConstants.Currency.US) || 
-            ruleCondition.getConditionRate().getUnitName().equals(CintasConstants.Currency.CA)) {
-          priceMin = priceMin.multiply(BigDecimal.TEN);
-          priceMax = priceMax.multiply(BigDecimal.TEN);
-        }
-      }
+//      if (ruleCondition.getCalculationType() == PricingCustomizingConstants.CalculationType.FIXED_AMOUNT) {
+//        if (ruleCondition.getConditionRate().getUnitName().equals(CintasConstants.Currency.US) || 
+//            ruleCondition.getConditionRate().getUnitName().equals(CintasConstants.Currency.CA)) {
+//          priceMin = priceMin.multiply(BigDecimal.TEN);
+//          priceMax = priceMax.multiply(BigDecimal.TEN);
+//        }
+//      }
 
       if (stopExclusion.equals(CintasConstants.ABAP_TRUE)) {
         pricingCondition.setConditionRateValue(BigDecimal.ZERO);
