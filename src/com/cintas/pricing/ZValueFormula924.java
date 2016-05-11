@@ -29,16 +29,19 @@ public class ZValueFormula924 extends ValueFormulaAdapter {
       }
     }
 
-    if (ZPRT != null) {
+    if (ZPRT == null) {
+      return null;
+    } 
+    else {
       BigDecimal ZPRTRate = ZPRT.getConditionRate().getValue();
       BigDecimal ZPRTValue = ZPRT.getConditionValue().getValue();
-
-      if (ZPRTRate != null && ZPRTRate.compareTo(BigDecimal.ZERO) > 0) {
+      
+      if (ZPRTValue.compareTo(BigDecimal.ZERO) > 0) {
         pricingCondition.setConditionRateValue(ZPRTRate);
-      }
-
-      if (ZPRTValue != null && ZPRTValue.compareTo(BigDecimal.ZERO) > 0) {
         pricingCondition.setConditionValue(ZPRTValue);
+      }
+      else {
+        return null;
       }
     }
 
@@ -54,7 +57,8 @@ public class ZValueFormula924 extends ValueFormulaAdapter {
         }
       }
       
-    } else if (itemProduct.equals(pricingItem.getAttributeValue(CintasConstants.AncillaryMaterials.MINIMUM))) {		  
+    } 
+    else if (itemProduct.equals(pricingItem.getAttributeValue(CintasConstants.AncillaryMaterials.MINIMUM))) {		  
       conditions = pricingItem.getUserExitConditions();
       for (int i=0; i<conditions.length; i++) {
         String conditionType = conditions[i].getConditionTypeName();
@@ -64,7 +68,8 @@ public class ZValueFormula924 extends ValueFormulaAdapter {
         }
       }
       
-    } else if (itemProduct.equals(pricingItem.getAttributeValue(CintasConstants.AncillaryMaterials.FREIGHT))) {
+    } 
+    else if (itemProduct.equals(pricingItem.getAttributeValue(CintasConstants.AncillaryMaterials.FREIGHT))) {
       BigDecimal freightCharge = BigDecimal.ZERO;
 
       conditions = pricingItem.getUserExitConditions();
