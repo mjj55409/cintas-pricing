@@ -58,10 +58,11 @@ public class ZBaseFormula907 extends BaseFormulaAdapter {
       if (pricingItem.isReturn())
         kbetr = kbetr.negate();
  
-      userexitLogger.writeLogDebug("Setting condition rate = " + kbetr);
+      userexitLogger.writeLogDebug("Setting condition  = " + kbetr);
       pricingCondition.setConditionRateValue(kbetr);
+      pricingCondition.setConditionValue(kbetr);
     }
 
-    return kbetr;
+    return BigDecimal.ZERO;
   }
 }

@@ -28,62 +28,56 @@ public class ZValueFormula924 extends ValueFormulaAdapter {
         break;
       }
     }
-
-    if (ZPRT == null) {
-      return null;
-    } 
-    else {
+    
+    if (ZPRT != null) {
       BigDecimal ZPRTRate = ZPRT.getConditionRate().getValue();
       BigDecimal ZPRTValue = ZPRT.getConditionValue().getValue();
       
-      if (ZPRTValue.compareTo(BigDecimal.ZERO) > 0) {
-        pricingCondition.setConditionRateValue(ZPRTRate);
-        pricingCondition.setConditionValue(ZPRTValue);
-      }
-      else {
-        return null;
-      }
+      pricingCondition.setConditionRateValue(ZPRTRate);
+      pricingCondition.setConditionValue(ZPRTValue);
     }
 
-    String itemProduct = pricingItem.getProduct().getId();
-
-    if (itemProduct.equals(pricingItem.getAttributeValue(CintasConstants.AncillaryMaterials.SERVICE))) {
-      conditions = pricingItem.getUserExitConditions();
-      for (int i=0; i<conditions.length; i++) {
-        String conditionType = conditions[i].getConditionTypeName();
-        if (conditionType != null && conditionType.equals(CintasConstants.Conditions.SERVICE_CHARGE)) {
-          pricingCondition.setConditionRateValue(conditions[i].getConditionValue().getValue());
-          pricingCondition.setConditionValue(conditions[i].getConditionValue().getValue());
+    if (ZPRT.getConditionValue().getValue().compareTo(BigDecimal.ZERO) > 0) {
+      String itemProduct = pricingItem.getProduct().getId();
+  
+      if (itemProduct.equals(pricingItem.getAttributeValue(CintasConstants.AncillaryMaterials.SERVICE))) {
+        conditions = pricingItem.getUserExitConditions();
+        for (int i=0; i<conditions.length; i++) {
+          String conditionType = conditions[i].getConditionTypeName();
+          if (conditionType != null && conditionType.equals(CintasConstants.Conditions.SERVICE_CHARGE)) {
+            pricingCondition.setConditionRateValue(conditions[i].getConditionValue().getValue());
+            pricingCondition.setConditionValue(conditions[i].getConditionValue().getValue());
+          }
         }
-      }
-      
-    } 
-    else if (itemProduct.equals(pricingItem.getAttributeValue(CintasConstants.AncillaryMaterials.MINIMUM))) {		  
-      conditions = pricingItem.getUserExitConditions();
-      for (int i=0; i<conditions.length; i++) {
-        String conditionType = conditions[i].getConditionTypeName();
-        if (conditionType != null && conditionType.equals(CintasConstants.Conditions.ADJ_MINIMUM)) {
-          pricingCondition.setConditionRateValue(conditions[i].getConditionValue().getValue());
-          pricingCondition.setConditionValue(conditions[i].getConditionValue().getValue());
+        
+      } 
+      else if (itemProduct.equals(pricingItem.getAttributeValue(CintasConstants.AncillaryMaterials.MINIMUM))) {		  
+        conditions = pricingItem.getUserExitConditions();
+        for (int i=0; i<conditions.length; i++) {
+          String conditionType = conditions[i].getConditionTypeName();
+          if (conditionType != null && conditionType.equals(CintasConstants.Conditions.ADJ_MINIMUM)) {
+            pricingCondition.setConditionRateValue(conditions[i].getConditionValue().getValue());
+            pricingCondition.setConditionValue(conditions[i].getConditionValue().getValue());
+          }
         }
-      }
-      
-    } 
-    else if (itemProduct.equals(pricingItem.getAttributeValue(CintasConstants.AncillaryMaterials.FREIGHT))) {
-      BigDecimal freightCharge = BigDecimal.ZERO;
-
-      conditions = pricingItem.getUserExitConditions();
-      for (int i=0; i<conditions.length; i++) {
-        if (conditions[i].getConditionCategory() == PricingCustomizingConstants.Category.FREIGHT) {
-          freightCharge = freightCharge.add(conditions[i].getConditionValue().getValue());
+        
+      } 
+      else if (itemProduct.equals(pricingItem.getAttributeValue(CintasConstants.AncillaryMaterials.FREIGHT))) {
+        BigDecimal freightCharge = BigDecimal.ZERO;
+  
+        conditions = pricingItem.getUserExitConditions();
+        for (int i=0; i<conditions.length; i++) {
+          if (conditions[i].getConditionCategory() == PricingCustomizingConstants.Category.FREIGHT) {
+            freightCharge = freightCharge.add(conditions[i].getConditionValue().getValue());
+          }
         }
+  
+        if (freightCharge.compareTo(BigDecimal.ZERO) != 0) {
+          pricingCondition.setConditionRateValue(freightCharge);
+          pricingCondition.setConditionValue(freightCharge);
+        }
+        
       }
-
-      if (freightCharge.compareTo(BigDecimal.ZERO) != 0) {
-        pricingCondition.setConditionRateValue(freightCharge);
-        pricingCondition.setConditionValue(freightCharge);
-      }
-      
     }
 
     /*
