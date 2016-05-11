@@ -5,35 +5,27 @@ import com.sap.spe.condmgnt.customizing.IStep;
 import com.sap.spe.condmgnt.finding.userexit.IConditionFindingManagerUserExit;
 import com.sap.spe.condmgnt.finding.userexit.RequirementAdapter;
 
-/**
- * @author Jolly Khanna (jkhanna@rimakconsulting.com)
- * @version 1.0
- */
-
 public class ZRequirement913 extends RequirementAdapter {
 
 	public boolean checkRequirement(IConditionFindingManagerUserExit item,
 			IStep step, IAccess access) {
 		
-		String materialGroup = item.getAttributeValue("MATERIAL GROUP");
-		
-		// Requirement: Not Ancillary
-		if (materialGroup != null && materialGroup.equals("ANC"))
-			return false;
-
-		/*
-		 * PROBLEM: ZIPD and ZIRL are not determined at the time that this requirement is run!!!
-		 * That means that the code to retrieve insurance program information is totally broken.
-		 * 
+	  if (CintasConstants.IsProductAncillary(item))
+	    return false;
+	  
+	  /*
+	   * PROBLEM: ZIPD and ZIRL are not determined at the time that this requirement is run!!!
+	   * That means that the code to retrieve insurance program information is totally broken.
+	   * 
 		// Type cast item to get access to pricing condition table
 		IPricingItemUserExit pricingItem = (IPricingItemUserExit)item;
-		
+
 		// Initialize values that are stored on other condition records
 		String insuranceProgram = "";
 		String makeupExclusion = "";
 		String trimExclusion = "";
-		
-		
+
+
 		// Get condition type ZIPD from the conditions table
 		IPricingConditionUserExit[] conditions = pricingItem.getUserExitConditions();
 		for (int i=0; i<conditions.length; i++) {
@@ -46,19 +38,18 @@ public class ZRequirement913 extends RequirementAdapter {
 				String ZIRLInsuranceProgram = conditions[i].getConditionRecord().getVariableDataValue("ZZ_INSURP");
 				if (ZIRLInsuranceProgram != null && !ZIRLInsuranceProgram.equals(""))
 					insuranceProgram = ZIRLInsuranceProgram;
-				
+
 				makeupExclusion = conditions[i].getConditionRecord().getVariableDataValue("ZZ_MUINS_EX") != null ? conditions[i].getConditionRecord().getVariableDataValue("ZZ_MUINS_EX") : "";
 				trimExclusion = conditions[i].getConditionRecord().getVariableDataValue("ZZ_TRINS_EX") != null ? conditions[i].getConditionRecord().getVariableDataValue("ZZ_TRINS_EX") : "";
 				break;
 			}
 		}
-		
+
 		// Allow line item insurance program to override determined value
 		String itemInsuranceProgram = item.getAttributeValue("INSURANCE PROGRAM") != null ? item.getAttributeValue("INSURANCE PROGRAM") : "";
 		if (!itemInsuranceProgram.equals(""))
 			insuranceProgram = itemInsuranceProgram;
-		
-		*/
+	   */
 		
 		// Get additional information from item communication structure
 		String insuranceIndicator = item.getAttributeValue("INSURANCE") != null ? item.getAttributeValue("INSURANCE") : "";
@@ -72,21 +63,31 @@ public class ZRequirement913 extends RequirementAdapter {
 		String makeupExclusion = item.getAttributeValue("MAKEUP EXCLUSION") != null ? item.getAttributeValue("MAKEUP EXCLUSION") : "";
 		String trimExclusion = item.getAttributeValue("TRIM EXCLUSION") != null ? item.getAttributeValue("TRIM EXCLUSION") : "";
 		
-		String conditionType = step.getConditionType().getName() != null ? step.getConditionType().getName() : "";
+		String conditionType = (step.getConditionType().getName() != null ? step.getConditionType().getName() : CintasConstants.INITIAL);
 		
-		if (conditionType.equals("ZIPD")) {
+		if (conditionType.equals(CintasConstants.Conditions.INSURANCE_PROGRAM)) {
 			// Insurance program must be maintained on the line item
-			if (insuranceIndicator.equals(""))
+			if (CintasConstants.IsAttributeInitial(item, CintasConstants.Attributes.INSURANCE))
 				return false;
 			
-			// Usage code must be in 0LPRX
-			if (usageCode.equals("") || "0LPRX".indexOf(usageCode) < 0)
-				return false;
+			String usage = item.getAttributeValue(CintasConstants.Attributes.USAGE);
+			if (!(usage.equals(CintasConstants.Usage.RENTAL) ||
+			    usage.equals(CintasConstants.Usage.LOST)   ||
+			    usage.equals(CintasConstants.Usage.UNILEASE) ||
+			    usage.equals(CintasConstants.Usage.DESTROY)  ||
+			    usage.equals(CintasConstants.Usage.CHARGES)))
+			  return false;
+			
 		}
-		else if (conditionType.equals("ZIRL")) {
-			// Usage code must be in 0LPRX
-			if (usageCode.equals("") || "0LPRX".indexOf(usageCode) < 0)
-				return false;			
+		else if (conditionType.equals(CintasConstants.Conditions.Rules.INSURANCE)) {
+          String usage = item.getAttributeValue(CintasConstants.Attributes.USAGE);
+          if (!(usage.equals(CintasConstants.Usage.RENTAL) ||
+              usage.equals(CintasConstants.Usage.LOST)   ||
+              usage.equals(CintasConstants.Usage.UNILEASE) ||
+              usage.equals(CintasConstants.Usage.DESTROY)  ||
+              usage.equals(CintasConstants.Usage.CHARGES)))
+            return false;
+          
 		}
 		else if (conditionType.equals("ZICH") || conditionType.equals("ZRIC")) {
 			// Insurance Program must be 10 or 20
@@ -148,20 +149,15 @@ public class ZRequirement913 extends RequirementAdapter {
 						&& !insuranceProgram.equals("22"))
 					return false;
 			}
-			else if (usageCode.equals("R")) {
+			else if (usageCode.equals(CintasConstants.Usage.DESTROY)) {
 				// Insurance Program must be 10, 11, 12, 20, 21, or 22
-				if (!insuranceProgram.equals("10")
-						&& !insuranceProgram.equals("11")
-						&& !insuranceProgram.equals("12")
-						&& !insuranceProgram.equals("20")
-						&& !insuranceProgram.equals("21")
-						&& !insuranceProgram.equals("22"))
+			  if (!CintasConstants.IsInsuranceVantage(item) && !CintasConstants.IsInsuranceVantagePlus(item))
 					return false;				
 			}
-			else if (usageCode.equals("X")) {
+			else if (usageCode.equals(CintasConstants.Usage.CHARGES)) {
 				// Makeup Insurance or Trim Insurance must be available
-				if ((makeupInsurance.equals("X") && makeupExclusion.equals(""))
-						|| (trimInsurance.equals("X") && trimExclusion.equals("")))
+				if ((makeupInsurance.equals(CintasConstants.ABAP_TRUE) && makeupExclusion.equals(CintasConstants.INITIAL))
+						|| (trimInsurance.equals(CintasConstants.ABAP_TRUE) && trimExclusion.equals(CintasConstants.INITIAL)))
 					return true;
 				else
 					return false;

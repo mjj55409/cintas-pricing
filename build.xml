@@ -33,7 +33,7 @@
 		<javac srcdir="${sourcedir}"
 			     destdir="${builddir}"
 			     source="1.4"
-			     includeantruntime="false" 
+			     includeantruntime="true" 
 			     listfiles="true" >
 		  <classpath refid="cintas-pricing.classpath"/>
 			<compilerarg value="-Xlint:-options" />
