@@ -151,7 +151,13 @@ public class ZRequirement913 extends RequirementAdapter {
 			}
 			else if (usageCode.equals(CintasConstants.Usage.DESTROY)) {
 				// Insurance Program must be 10, 11, 12, 20, 21, or 22
-			  if (!CintasConstants.IsInsuranceVantage(item) && !CintasConstants.IsInsuranceVantagePlus(item))
+			  if (insuranceProgram.equals("10") ||
+			      insuranceProgram.equals("11") ||
+			      insuranceProgram.equals("12") ||
+			      insuranceProgram.equals("20") ||
+			      insuranceProgram.equals("21") ||
+			      insuranceProgram.equals("22"))
+			  //if (!CintasConstants.IsInsuranceVantage(item) && !CintasConstants.IsInsuranceVantagePlus(item))
 					return false;				
 			}
 			else if (usageCode.equals(CintasConstants.Usage.CHARGES)) {

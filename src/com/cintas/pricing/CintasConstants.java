@@ -216,8 +216,8 @@ public class CintasConstants
   private static HashMap CreateCurrencyMap() {
     HashMap _currency = new HashMap(2);
     
-    _currency.put("USD", "USD3");
-    _currency.put("CAD", "CAD3");
+    _currency.put("USD", "US3");
+    _currency.put("CAD", "CA3");
     
     return _currency;
   }
