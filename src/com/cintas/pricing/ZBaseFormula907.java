@@ -29,40 +29,61 @@ public class ZBaseFormula907 extends BaseFormulaAdapter {
       if (ruleCondition != null && chargeCondition != null)
         break;
     }
-      
-    if (ruleCondition == null)
-      return null;
-      
-    BigDecimal kbetr = pricingCondition.getConditionRate().getValue();
     
-    if (kbetr.compareTo(BigDecimal.ZERO) == 0) {
-      
-      BigDecimal chargeMin = (ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.STOP_MIN) != null ?
-          new BigDecimal(ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.STOP_MIN)) : new BigDecimal("0"));
-      BigDecimal chargeMax = (ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.STOP_MAX) != null ?
-          new BigDecimal(ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.STOP_MAX)) : new BigDecimal("0"));  
-
-      BigDecimal stvKbetr = chargeCondition.getConditionRate().getValue();
-      
-      userexitLogger.writeLogDebug("chargeMin = " + chargeMin);
-      userexitLogger.writeLogDebug("chargeMax = " + chargeMax);
-      userexitLogger.writeLogDebug("chargeVal = " + stvKbetr);
-
-      if (stvKbetr.compareTo(chargeMin) < 0)
-        kbetr = chargeMin;
-      else if (stvKbetr.compareTo(chargeMax) > 0)
-        kbetr = chargeMax;
-      else
-        kbetr = stvKbetr;
-      
-      if (pricingItem.isReturn())
-        kbetr = kbetr.negate();
- 
-      userexitLogger.writeLogDebug("Setting condition  = " + kbetr);
-      pricingCondition.setConditionRateValue(kbetr);
-      pricingCondition.setConditionValue(kbetr);
+    BigDecimal kbetr = BigDecimal.ZERO;
+    
+    if (pricingItem.getAttributeValue(CintasConstants.Attributes.STOP_EXCLUSION).equals(CintasConstants.ABAP_TRUE)) {
+      userexitLogger.writeLogDebug("Exclusion is active.");
     }
+    else if (ruleCondition != null || chargeCondition != null) {
+      if (ruleCondition != null && ruleCondition.getConditionValue().getValue().compareTo(BigDecimal.ZERO) != 0) {
+        kbetr = ruleCondition.getConditionValue().getValue();
+      }
+      else {
+        BigDecimal chargeMin;
+        BigDecimal chargeMax;
+        if (ruleCondition == null) {
+          chargeMin = BigDecimal.ZERO;
+          chargeMax = BigDecimal.ZERO;
+        }
+        else {
+          String _min = ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.STOP_MIN);
+          String _max = ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.STOP_MAX);
+          chargeMin = (_min != null ? new BigDecimal(_min) : BigDecimal.ZERO);
+          chargeMax = (_max != null ? new BigDecimal(_max) : BigDecimal.ZERO);
+        }
+        BigDecimal stvKbetr = (chargeCondition != null ? chargeCondition.getConditionRate().getValue() : BigDecimal.ZERO);
+
+        userexitLogger.writeLogDebug("chargeMin = " + chargeMin);
+        userexitLogger.writeLogDebug("chargeMax = " + chargeMax);
+        userexitLogger.writeLogDebug("chargeVal = " + stvKbetr);
+        
+        if (stvKbetr.compareTo(BigDecimal.ZERO) == 0) {
+          if (chargeMax.compareTo(BigDecimal.ZERO) != 0) {
+            kbetr = chargeMax;
+          }
+          else {
+            kbetr = chargeMin;
+          }
+        }
+        else {
+          if (stvKbetr.compareTo(chargeMin) < 0 && chargeMin.compareTo(BigDecimal.ZERO) != 0) {
+            kbetr = chargeMin;
+          }
+          else if (stvKbetr.compareTo(chargeMax) > 0 && chargeMax.compareTo(BigDecimal.ZERO) != 0) {
+            kbetr = chargeMax;
+          }
+          else {
+            kbetr = stvKbetr;
+          }
+        }
+      }
+    }
+    
+    userexitLogger.writeLogDebug("Setting condition  = " + kbetr);
+    pricingCondition.setConditionRateValue(kbetr);
+    pricingCondition.setConditionValue(kbetr);
 
     return BigDecimal.ZERO;
-  }
+  }   
 }

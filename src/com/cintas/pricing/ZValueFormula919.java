@@ -13,9 +13,11 @@ public class ZValueFormula919 extends ValueFormulaAdapter {
 
     BigDecimal netValue = pricingItem.getNetValueAsBigDecimal();
 
-    // Set condition rate
-    if (pricingCondition.getConditionBase().getValue().compareTo(new BigDecimal(0)) != 0) {
-      pricingCondition.setConditionRateValue(netValue.divide(pricingCondition.getConditionBase().getValue(), 2, BigDecimal.ROUND_HALF_UP));
+    if (netValue.compareTo(BigDecimal.ZERO) != 0) {
+      // Set condition rate
+      if (pricingCondition.getConditionBase().getValue().compareTo(BigDecimal.ZERO) != 0) {
+        pricingCondition.setConditionRateValue(netValue.divide(pricingCondition.getConditionBase().getValue(), 2, BigDecimal.ROUND_HALF_UP));
+      }
     }
 
     // Set condition value to the net value
