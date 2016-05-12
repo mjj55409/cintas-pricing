@@ -13,7 +13,7 @@ public class ZBaseFormula904 extends BaseFormulaAdapter {
       IPricingConditionUserExit pricingCondition) {
 
     if (CintasConstants.IsItemNoCharge(pricingItem)) {
-      pricingCondition.setConditionRateValue(new BigDecimal(-100));
+      pricingCondition.setConditionRateValue((new BigDecimal(100)).negate());
     }
     else {
       pricingCondition.setInactive(PricingCustomizingConstants.InactiveFlag.INVISIBLE);
