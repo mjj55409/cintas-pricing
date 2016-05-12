@@ -176,6 +176,10 @@ public class CintasConstants
     return (_currency == null ? documentCurrency : _currency);
   }
   
+  public static final String GetPrecisionCurrency(IPricingItemUserExit pricingItem) {
+    return GetPrecisionCurrency(pricingItem.getUserExitDocument().getDocumentCurrencyUnit().getUnitName());
+  }
+  
   public static final boolean IsPrecisionCurrency(String currency) {
     return PRECISION_CURRENCIES.containsValue(currency);
   }
@@ -185,13 +189,12 @@ public class CintasConstants
      * No charge can be set either on the item in WebUI (AttributeValue)
      * or due to exclusion rules in Base Formula 903 (ObjectForUserExit).
      */
-    if (pricingItem.getAttributeValue(Attributes.NOCHARGE).equals(ABAP_TRUE))
-      return true;
+    String itemNoCharge = (pricingItem.getAttributeValue(CintasConstants.Attributes.NOCHARGE) != null
+        ? pricingItem.getAttributeValue(CintasConstants.Attributes.NOCHARGE) : INITIAL);
+    String objectNoCharge = (pricingItem.getObjectForUserExits(CintasConstants.Attributes.NOCHARGE) != null 
+        ? (String)pricingItem.getObjectForUserExits(CintasConstants.Attributes.NOCHARGE) : INITIAL);
 
-    if (pricingItem.getObjectForUserExits(Attributes.NOCHARGE).equals(ABAP_TRUE))
-      return true;
-
-    return false;
+    return (itemNoCharge.equals(ABAP_TRUE) || objectNoCharge.equals(ABAP_TRUE));
   }
  
   public static final boolean IsInsuranceVantage(IConditionFindingManagerUserExit item) {
