@@ -52,7 +52,7 @@ public class ZRequirement913 extends RequirementAdapter {
 	   */
 
 	  // Get additional information from item communication structure
-	  //String insuranceIndicator = item.getAttributeValue(CintasConstants.Attributes.INSURANCE);
+	  String insuranceIndicator = item.getAttributeValue(CintasConstants.Attributes.INSURANCE);
 	  String usageCode = item.getAttributeValue(CintasConstants.Attributes.USAGE);
 	  String makeupInsurance = item.getAttributeValue(CintasConstants.Attributes.INSURANCE_MAKEUP);
 	  String trimInsurance = item.getAttributeValue(CintasConstants.Attributes.TRIM_INSURANCE);
@@ -67,7 +67,7 @@ public class ZRequirement913 extends RequirementAdapter {
 
 	  if (conditionType.equals(CintasConstants.Conditions.INSURANCE_PROGRAM)) {
 	    // Insurance program must be maintained on the line item
-	    if (CintasConstants.IsAttributeInitial(item, CintasConstants.Attributes.INSURANCE))
+	    if (insuranceIndicator.equals(CintasConstants.INITIAL))
 	      return false;
 
 	    String usage = item.getAttributeValue(CintasConstants.Attributes.USAGE);

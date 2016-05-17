@@ -11,7 +11,7 @@ public class ZRequirement922 extends RequirementAdapter {
       IStep step, IAccess access) {
 
     String _usage = item.getAttributeValue(CintasConstants.Attributes.USAGE);
-    if (!(_usage.equals(CintasConstants.Usage.BUYBACK) || _usage.equals(CintasConstants.Usage.CHARGES)))
+    if ((_usage.equals(CintasConstants.Usage.BUYBACK) || _usage.equals(CintasConstants.Usage.CHARGES)))
       return false;
     
     String _name = step.getConditionType().getName();

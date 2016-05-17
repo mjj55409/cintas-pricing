@@ -96,7 +96,7 @@ public class CintasConstants
     public static final String INSURANCE_PCT        = "ZIPS";
     public static final String INSURANCE_MAKEUP     = "ZIMU";
     public static final String INSURANCE_TRIM       = "ZITR";
-    public static final String INSURANCE_PROGRAM    = "ZPID";
+    public static final String INSURANCE_PROGRAM    = "ZIPD";
     public static final String ADJ_MINIMUM          = "ZSTA";
     public static final String SIZE_PREMIUM         = "ZSPM";
     public static final String BOOK_PRICE           = "ZBOK";
