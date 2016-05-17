@@ -25,9 +25,14 @@ public class CintasConstants
   
   public static final HashMap    PRECISION_CURRENCIES       = CreateCurrencyMap();
   
+  public static final class MaterialGroup {
+    public static final String TRIM                     = "DCTRIM";
+  }
+  
   public static final class Attributes {
     public static final String PRODUCT                  = "PRODUCT";
     public static final String PRICE_PRODUCT            = "PRICE_PRODUCT"; //price reference material
+    public static final String MATERIAL_GROUP           = "ZZ_MATKL";
     public static final String NOCHARGE                 = "ZZ_NOCHG";
     public static final String SPECIAL_HANDLING         = "ZZ_SPCHAND";
     public static final String PACKAGE_CODE             = "ZZ_PACKCD";
@@ -79,6 +84,7 @@ public class CintasConstants
   
   public static final class Conditions {
     
+    public static final String LOCAL_PRODUCT_LINE   = "ZLPL";
     public static final String BASE_PRICE           = "ZBPR";
     public static final String INVOICE_DISCOUNT     = "ZDIS";
     public static final String SPECIAL_HANDLING     = "ZSUR";
@@ -143,8 +149,7 @@ public class CintasConstants
     public final static String INSURANCE = "ZIN";
   }
 
-  public static boolean IsProductAncillary(IConditionFindingManagerUserExit item)
-  {
+  public static boolean IsProductAncillary(IConditionFindingManagerUserExit item) {
     String productGuid = item.getAttributeValue(Attributes.PRODUCT);
 
     if (productGuid.equals(item.getAttributeValue(AncillaryMaterials.INSURANCE)))
@@ -155,6 +160,14 @@ public class CintasConstants
       return true;
     if (productGuid.equals(item.getAttributeValue(AncillaryMaterials.FREIGHT)))
       return true;
+
+    return false;
+  }
+  
+  public static boolean IsAncillaryService(IConditionFindingManagerUserExit item) {
+    if (IsProductAncillary(item))
+       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.SERVICE)))
+        return true;
 
     return false;
   }
