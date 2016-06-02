@@ -2,8 +2,11 @@ package com.cintas.pricing;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import com.sap.spe.condmgnt.finding.userexit.IConditionFindingManagerUserExit;
+import com.sap.spe.pricing.customizing.PricingCustomizingConstants;
+import com.sap.spe.pricing.transactiondata.userexit.IPricingConditionUserExit;
 import com.sap.spe.pricing.transactiondata.userexit.IPricingItemUserExit;
 
 public class CintasConstants 
@@ -24,6 +27,8 @@ public class CintasConstants
   public static final String     MATERIAL_EXCL_NOCHG        = "1";
   
   public static final HashMap    PRECISION_CURRENCIES       = CreateCurrencyMap();
+  
+  public static final HashSet    INSURANCE_CONDITIONS       = CreateInsuranceSet();
   
   public static final class MaterialGroup {
     public static final String TRIM                     = "DCTRIM";
@@ -89,6 +94,7 @@ public class CintasConstants
     public static final String INVOICE_DISCOUNT     = "ZDIS";
     public static final String SPECIAL_HANDLING     = "ZSUR";
     public static final String AGREEMENT_PRICE      = "ZPR0";
+    public static final String AGREEMENT_PRICE_ADJ  = "ZPRA";
     public static final String PROGRAM_TOTAL        = "ZPRT";
     public static final String SERVICE_CHARGE       = "ZSVC";
     public static final String INSURANCE_CHARGE     = "ZICH";
@@ -97,6 +103,7 @@ public class CintasConstants
     public static final String INSURANCE_MAKEUP     = "ZIMU";
     public static final String INSURANCE_TRIM       = "ZITR";
     public static final String INSURANCE_PROGRAM    = "ZIPD";
+    public static final String INSURANCE_ADJUSTMENT = "ZINA";
     public static final String ADJ_MINIMUM          = "ZSTA";
     public static final String SIZE_PREMIUM         = "ZSPM";
     public static final String BOOK_PRICE           = "ZBOK";
@@ -105,16 +112,20 @@ public class CintasConstants
     public static final String MATERIAL_LIST        = "ZMLE";
     public static final String ITEM_DISCOUNT        = "ZIDC";
     public static final String STOP_MIN             = "ZSTV";
+    public static final String DIRECT_SALE_SURCHG   = "ZDSS";
+    public static final String PRICE_DISCOUNT       = "ZPRD";
     
     public static final class Rules {
       public static final String AGREEMENT_PRICE    = "ZPRR";
       public static final String INVOICE_DISCOUNT   = "ZRDI";
-      public static final String INSURANCE_PCT_INV  = "ZPRI";
+      public static final String INSURANCE_PCT_INV  = "ZRPI";
       public static final String NONCOMPLIANCE      = "ZNCR";
       public static final String QTY_RESTRICTION    = "ZQTR";
       public static final String SERVICE_CHARGE     = "ZRSV";
       public static final String STOP_MIN           = "ZSTR";
       public static final String INSURANCE          = "ZIRL";
+      public static final String SIZE_PREMIUM       = "ZRSP";
+      public static final String SURCHARGE          = "ZRSC";
     }
     
     public static final class Exclusions {
@@ -141,6 +152,9 @@ public class CintasConstants
   }
   
   public static final class Currency {
+    public static final int    PRECISION_SCALE = 3;
+    public static final int    SCALE           = 2;
+    
     public static final String US = "USD";
     public static final String CA = "CAD";
   }
@@ -232,9 +246,90 @@ public class CintasConstants
   private static HashMap CreateCurrencyMap() {
     HashMap _currency = new HashMap(2);
     
-    _currency.put("USD", "US3");
-    _currency.put("CAD", "CA3");
+    _currency.put(Currency.US, "US3");
+    _currency.put(Currency.CA, "CA3");
     
     return _currency;
   }
+  
+  private static HashSet CreateInsuranceSet() {
+    HashSet _conditions = new HashSet(7);
+    
+    _conditions.add(Conditions.INSURANCE_CHARGE);
+    _conditions.add(Conditions.Rules.INSURANCE_PCT_INV);
+    _conditions.add(Conditions.INSURANCE_AUTOLR);
+    _conditions.add(Conditions.INSURANCE_PCT);
+    _conditions.add(Conditions.INSURANCE_MAKEUP);
+    _conditions.add(Conditions.INSURANCE_TRIM);
+    _conditions.add(Conditions.INSURANCE_ADJUSTMENT);
+
+    return _conditions;
+  }
+  
+public static final BigDecimal GetConditionValue(IPricingItemUserExit item, String conditionName) {
+    BigDecimal _value = BigDecimal.ZERO;
+    
+    if (FindCondition(item, conditionName) != null)
+      _value = FindCondition(item, conditionName).getConditionValue().getValue();
+    
+    return _value;
+  }
+  
+  public static final BigDecimal GetConditionRate(IPricingItemUserExit item, String conditionName) {
+    BigDecimal _value = BigDecimal.ZERO;
+    
+    if (FindCondition(item, conditionName) != null)
+      _value = FindCondition(item, conditionName).getConditionRate().getValue();
+    
+    return _value;
+  }
+ 
+  public static final IPricingConditionUserExit FindCondition(IPricingItemUserExit item, String conditionName) {
+    IPricingConditionUserExit _condition = null;
+
+    IPricingConditionUserExit[] _conditions = item.getUserExitConditions();
+    for (int i=0; i < _conditions.length; i++) {
+      String conditionType = _conditions[i].getConditionTypeName();
+      if (conditionType != null && conditionType.equals(conditionName)) {
+        _condition = _conditions[i];
+        break;
+      }
+    }       
+
+    return _condition;
+  }
+  
+  public static final BigDecimal GetSubtotalK(IPricingItemUserExit item) {
+    BigDecimal _subtotal = item.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_K);
+    if (_subtotal.compareTo(BigDecimal.ZERO) == 0)
+      _subtotal = GetConditionRate(item, Conditions.AGREEMENT_PRICE)
+          .add(GetConditionRate(item, Conditions.SPECIAL_HANDLING))
+          .add(GetConditionRate(item, Conditions.Rules.SURCHARGE));
+    return _subtotal;
+  }
+  
+  public static final BigDecimal GetSubtotalL(IPricingItemUserExit item) {
+//    BigDecimal _subtotal = item.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_L);
+//    if (_subtotal.compareTo(BigDecimal.ZERO) == 0)
+    BigDecimal _subtotal = GetConditionRate(item, Conditions.AGREEMENT_PRICE_ADJ)
+          .add(GetConditionRate(item, Conditions.SIZE_PREMIUM))
+          .add(GetConditionRate(item, Conditions.PRICE_DISCOUNT));
+    return _subtotal;
+  }
+  
+  public static final boolean HasInsuranceCondition(IPricingItemUserExit item) {
+    IPricingConditionUserExit[] _conditions = item.getUserExitConditions();
+    
+    for (int i=0; i < _conditions.length; i++) {
+      if (IsInsuranceCondition(_conditions[i].getConditionTypeName()))
+        return true;
+    }
+    
+    return false;
+  }
+  
+  public static final boolean IsInsuranceCondition(String conditionName) {
+    return INSURANCE_CONDITIONS.contains(conditionName);
+  }
+  
 }

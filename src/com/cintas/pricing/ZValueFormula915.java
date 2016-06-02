@@ -18,17 +18,18 @@ public class ZValueFormula915 extends ValueFormulaAdapter {
         pricingCondition.getPricingUnit().getValue());
   }
 
-  static public BigDecimal roundConditionValue(BigDecimal conditionValue, BigDecimal conditionBase, String currency, BigDecimal quantity)
+  static public BigDecimal roundConditionValue(BigDecimal conditionRate, BigDecimal conditionBase, String currency, BigDecimal quantity)
   {
-    // conditionValue == kbetr
+    // Returns a rounded condition value
+    // conditionRate == kbetr
     // conditionBase == kmein
 
     if (CintasConstants.IsPrecisionCurrency(currency)) {
       if (quantity.compareTo(BigDecimal.ZERO) > 0) {
-        conditionValue = conditionValue.multiply(conditionBase).divide(quantity, BigDecimal.ROUND_UNNECESSARY);
+        conditionRate = conditionRate.multiply(conditionBase).divide(quantity, BigDecimal.ROUND_UNNECESSARY);
       }
     }
 
-    return conditionValue;
+    return conditionRate;
   }
 }

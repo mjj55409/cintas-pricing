@@ -59,12 +59,12 @@ public class ZBaseFormula907 extends BaseFormulaAdapter {
         userexitLogger.writeLogDebug("chargeVal = " + stvKbetr);
         
         if (stvKbetr.compareTo(BigDecimal.ZERO) == 0) {
-          if (chargeMax.compareTo(BigDecimal.ZERO) != 0) {
-            kbetr = chargeMax;
-          }
-          else {
+//          if (chargeMax.compareTo(BigDecimal.ZERO) != 0) {
+//            kbetr = chargeMax;
+//          }
+//          else {
             kbetr = chargeMin;
-          }
+//          }
         }
         else {
           if (stvKbetr.compareTo(chargeMin) < 0 && chargeMin.compareTo(BigDecimal.ZERO) != 0) {

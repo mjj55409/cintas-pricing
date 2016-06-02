@@ -11,7 +11,6 @@ public class ZBaseFormula911 extends BaseFormulaAdapter {
   public BigDecimal overwriteConditionBase(IPricingItemUserExit pricingItem,
       IPricingConditionUserExit pricingCondition) {
 
-    // Not needed in CRM
-    return null;
+    return (pricingCondition.getConditionTypeName().equals("ZPR1") ? BigDecimal.ONE : null);
   }
 }

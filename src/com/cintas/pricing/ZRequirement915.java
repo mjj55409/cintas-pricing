@@ -23,6 +23,15 @@ public class ZRequirement915 extends RequirementAdapter {
       if (CintasConstants.IsProductAncillary(item))
         return false;
 
+    } 
+    else {
+
+      if (item.getAttributeValue(CintasConstants.Attributes.NOCHARGE).equals(CintasConstants.ABAP_TRUE))
+        return false;
+
+      if (CintasConstants.IsProductAncillary(item))
+        return false;
+
       java.util.Vector usageCodes = new java.util.Vector(5);
       usageCodes.add(CintasConstants.Usage.BUYBACK);
       usageCodes.add(CintasConstants.Usage.LOST);
@@ -32,10 +41,6 @@ public class ZRequirement915 extends RequirementAdapter {
 
       if (usageCodes.contains(item.getAttributeValue(CintasConstants.Attributes.USAGE)))
         return false;
-      
-    } 
-    else {
-      return false;
       
     }
 

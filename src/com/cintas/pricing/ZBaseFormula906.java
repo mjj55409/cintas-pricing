@@ -20,6 +20,9 @@ public class ZBaseFormula906 extends BaseFormulaAdapter {
         ? pricingCondition.getConditionTypeName() : CintasConstants.INITIAL);
 
     userexitLogger.writeLogDebug("Condition = " + conditionType);
+    
+//    if (conditionType.equals(CintasConstants.Conditions.SIZE_PREMIUM))
+//      return null;
 
     if (conditionType.equals(CintasConstants.Conditions.ITEM_DISCOUNT) && CintasConstants.IsItemNoCharge(pricingItem)) {
       return BigDecimal.ZERO;
@@ -34,6 +37,9 @@ public class ZBaseFormula906 extends BaseFormulaAdapter {
     }
     else if (conditionType.equals(CintasConstants.Conditions.INVOICE_DISCOUNT)) {
       ruleConditionType = CintasConstants.Conditions.Rules.INVOICE_DISCOUNT;
+    }
+    else if (conditionType.equals(CintasConstants.Conditions.SIZE_PREMIUM)) {
+      ruleConditionType = CintasConstants.Conditions.Rules.SIZE_PREMIUM;
     }
     else {
       /* Relies on looking at XKOMV-STUNB (lower limit of procedure step numbers for condition base)

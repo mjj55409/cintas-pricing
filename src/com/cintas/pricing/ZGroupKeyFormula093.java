@@ -2,6 +2,7 @@ package com.cintas.pricing;
 
 import java.math.BigDecimal;
 
+import com.sap.spe.base.logging.UserexitLogger;
 import com.sap.spe.pricing.customizing.PricingCustomizingConstants;
 import com.sap.spe.pricing.transactiondata.userexit.GroupKeyFormulaAdapter;
 import com.sap.spe.pricing.transactiondata.userexit.IGroupConditionUserExit;
@@ -15,15 +16,17 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
    * Non-ancillary items and other non-qualifying cases will be 
    * grouped into a blank group with no value assigned.
    */
-  private static final String groupKey = "093";
-
   public String setGroupKey(IPricingDocumentUserExit pricingDocument,
       IPricingItemUserExit pricingItem,
       IPricingConditionUserExit pricingCondition,
       IGroupConditionUserExit groupCondition) {
+    
+    UserexitLogger userexitLogger = new UserexitLogger(ZGroupKeyFormula093.class);
+    
+    String groupKey = "093";
 
     // Don't group non-ancillary items
-    if (CintasConstants.IsProductAncillary(pricingItem) || !CintasConstants.IsRentalProduct(pricingItem))
+    if (!CintasConstants.IsProductAncillary(pricingItem) || !CintasConstants.IsRentalProduct(pricingItem))
       return "";
 
     String accountAssignmentGroup = pricingItem.getAttributeValue(CintasConstants.Attributes.ACCOUNT_ASSIGNMENT_GROUP);
@@ -44,6 +47,8 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
     else {
       return "";
     }
+    
+    userexitLogger.writeLogDebug("Relevant subtotal = " + relevantSubtotal);
 
     /* The original ECC code relied on collecting conditions from all items
      * that belong to a particular subtotal; however, in IPC, there
@@ -52,54 +57,89 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
      * except that some of the time, the code adds the base value instead
      * of the final value.
      */
-    BigDecimal newValue = new BigDecimal(0);
-
+    BigDecimal newValue = BigDecimal.ZERO;
+    BigDecimal _xkwart = BigDecimal.ZERO;
+    BigDecimal _xkwert = BigDecimal.ZERO;
+    
     IPricingConditionUserExit[] conditions = pricingDocument.getUserExitConditions();
     for (int i=0; i<conditions.length; i++) {
-      String conditionType = conditions[i].getConditionTypeName() != null 
-          ? conditions[i].getConditionTypeName() : "";
+      String conditionType = (conditions[i].getConditionTypeName() != null 
+          ? conditions[i].getConditionTypeName() : "");
 
-          switch (relevantSubtotal) {
-          case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_E:
-            if (!conditionType.equals(CintasConstants.Conditions.INSURANCE_CHARGE) &&
-                !conditionType.equals(CintasConstants.Conditions.INSURANCE_AUTOLR) &&
-                !conditionType.equals(CintasConstants.Conditions.INSURANCE_PCT) &&
-                !conditionType.equals(CintasConstants.Conditions.INSURANCE_MAKEUP) &&
-                !conditionType.equals(CintasConstants.Conditions.INSURANCE_TRIM))
-              continue;
-            break;
+//      switch (relevantSubtotal) {
+//      case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_E:
+//        if (!conditionType.equals(CintasConstants.Conditions.INSURANCE_CHARGE) &&
+//            !conditionType.equals(CintasConstants.Conditions.INSURANCE_AUTOLR) &&
+//            !conditionType.equals(CintasConstants.Conditions.INSURANCE_PCT) &&
+//            !conditionType.equals(CintasConstants.Conditions.INSURANCE_MAKEUP) &&
+//            !conditionType.equals(CintasConstants.Conditions.INSURANCE_TRIM))
+//          continue;
+//        break;
+//
+//      case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_G:
+//        // Invoice Min/Max
+//        if (!conditionType.equals(CintasConstants.Conditions.SubTotals.AMOUNT_MIN_CHARGE))
+//          continue;
+//        break;
+//
+//      case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_D:
+//        // Freight Charges
+//        if (!conditionType.equals(CintasConstants.Conditions.BASE_PRICE))
+//          continue;
+//        break;
+//
+//      case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_J:
+//        if (!conditionType.equals(CintasConstants.Conditions.SERVICE_CHARGE))
+//          continue;
+//        break;
+//
+//      default:
+//        continue;
+//      }
 
-          case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_G:
-            // Invoice Min/Max
-            if (!conditionType.equals(CintasConstants.Conditions.SubTotals.AMOUNT_MIN_CHARGE))
-              continue;
-            break;
+      if (relevantSubtotal == PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_E &&
+          (conditionType.equals(CintasConstants.Conditions.INSURANCE_CHARGE) ||
+              conditionType.equals(CintasConstants.Conditions.INSURANCE_AUTOLR) ||
+              conditionType.equals(CintasConstants.Conditions.INSURANCE_PCT) ||
+              conditionType.equals(CintasConstants.Conditions.INSURANCE_MAKEUP) ||
+              conditionType.equals(CintasConstants.Conditions.INSURANCE_TRIM))) {
+        _xkwart = conditions[i].getConditionBase().getValue();
+        _xkwert = conditions[i].getConditionValue().getValue();
+      }
+      else if (relevantSubtotal == PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_G && 
+          conditionType.equals(CintasConstants.Conditions.SubTotals.AMOUNT_MIN_CHARGE)) {
+        _xkwart = conditions[i].getConditionBase().getValue();
+        _xkwert = conditions[i].getConditionValue().getValue();
+      }
+      else if (relevantSubtotal == PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_D &&
+          conditionType.equals(CintasConstants.Conditions.BASE_PRICE)) {
+        _xkwart = conditions[i].getConditionBase().getValue();
+        _xkwert = conditions[i].getConditionValue().getValue();
+      }
+      else if (relevantSubtotal == PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_J &&
+          conditionType.equals("ZSV1"/*CintasConstants.Conditions.SERVICE_CHARGE*/)) {
+        _xkwart = conditions[i].getConditionBase().getValue();
+        _xkwert = conditions[i].getConditionValue().getValue();
+      }
+      else {
+        _xkwart = BigDecimal.ZERO;
+        _xkwert = BigDecimal.ZERO;
+      }
 
-          case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_D:
-            // Freight Charges
-            if (!conditionType.equals(CintasConstants.Conditions.BASE_PRICE))
-              continue;
-            break;
-
-          case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_J:
-            if (!conditionType.equals(CintasConstants.Conditions.SERVICE_CHARGE))
-              continue;
-            break;
-
-          default:
-            continue;
-          }
-
-          if (conditions[i].getCalculationType() == PricingCustomizingConstants.CalculationType.PERCENTAGE && 
-              !accountAssignmentGroup.equals(CintasConstants.AccountAssignment.INSURANCE)) {
-            // Percentage Condition (but not insurance)
-            newValue = newValue.add(conditions[i].getConditionBase().getValue());
-          }
-          else {
-            // Not a Percentage Condition
-            newValue = newValue.add(conditions[i].getConditionValue().getValue());
-          }
+      if (_xkwart.compareTo(BigDecimal.ZERO) != 0 || _xkwert.compareTo(BigDecimal.ZERO) != 0) {
+        if (conditions[i].getCalculationType() == PricingCustomizingConstants.CalculationType.PERCENTAGE && 
+            !accountAssignmentGroup.equals(CintasConstants.AccountAssignment.INSURANCE)) {
+          // Percentage Condition (but not insurance)
+          newValue = newValue.add(_xkwart);
+        }
+        else {
+          // Not a Percentage Condition
+          newValue = newValue.add(_xkwert);
+        }
+      }
     }
+    
+    userexitLogger.writeLogDebug("Group value = " + newValue);
 
     if (newValue.compareTo(new BigDecimal(0)) > 0) {
       pricingCondition.setConditionRateValue(newValue);

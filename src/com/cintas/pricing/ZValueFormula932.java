@@ -23,8 +23,12 @@ public class ZValueFormula932 extends ValueFormulaAdapter {
       if (conditionType.equals(CintasConstants.Conditions.SPECIAL_HANDLING)) {
         surchargeRate = surchargeRate.add(conditions[i].getConditionRate().getValue());
         surchargeValue = surchargeValue.add(conditions[i].getConditionValue().getValue());
+        break;
       }
     }
+
+    if (surchargeValue.compareTo(BigDecimal.ZERO) == 0)
+      return BigDecimal.ZERO;
 
     pricingCondition.setConditionRateValue(surchargeRate);
 

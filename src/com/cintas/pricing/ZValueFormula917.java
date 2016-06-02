@@ -53,7 +53,8 @@ public class ZValueFormula917 extends ValueFormulaAdapter {
     if (CintasConstants.IsProductAncillary(pricingItem)) {
       if (ZPR1 == null || ZPR1.getConditionRate().getValue().compareTo(BigDecimal.ZERO) == 0) {
         //pricingItem.setStatusMessage(ZPR1Event);
-        return BigDecimal.ZERO;
+        //return BigDecimal.ZERO;
+        return null;
       } else {
         return null;
       }
@@ -66,11 +67,11 @@ public class ZValueFormula917 extends ValueFormulaAdapter {
 
     // Execute for usage codes that are not B, D, L, R, or X
     String usage = pricingItem.getAttributeValue(CintasConstants.Attributes.USAGE);
-    if (!usage.equals(CintasConstants.Usage.BUYBACK) ||
-        !usage.equals(CintasConstants.Usage.DIRECT)  ||
-        !usage.equals(CintasConstants.Usage.LOST)    ||
-        !usage.equals(CintasConstants.Usage.DESTROY) ||
-        !usage.equals(CintasConstants.Usage.CHARGES)) {
+    if (!(usage.equals(CintasConstants.Usage.BUYBACK) ||
+        usage.equals(CintasConstants.Usage.DIRECT)  ||
+        usage.equals(CintasConstants.Usage.LOST)    ||
+        usage.equals(CintasConstants.Usage.DESTROY) ||
+        usage.equals(CintasConstants.Usage.CHARGES))) {
       if (ZPR0 == null) {
         errorEvent = ZPR0Event;
       }
@@ -81,7 +82,15 @@ public class ZValueFormula917 extends ValueFormulaAdapter {
       pricingItem.setStatusMessage(errorEvent);
       return BigDecimal.ZERO;
     }
-
-    return null;
+    
+//    /* This is necessary for IPC only
+//     * Check if I have a value, and if not, grab the value from ZIPR
+//     */
+//    if (pricingCondition.getConditionValue().getValue().compareTo(BigDecimal.ZERO) == 0) {
+//      pricingCondition.setConditionRateValue(CintasConstants.GetConditionRate(pricingItem, CintasConstants.Conditions.INITIAL_PRICE));
+//      return CintasConstants.GetConditionValue(pricingItem, CintasConstants.Conditions.INITIAL_PRICE);
+//    } else {
+      return null;
+//    }
   }
 }

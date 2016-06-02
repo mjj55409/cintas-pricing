@@ -2,6 +2,7 @@ package com.cintas.pricing;
 
 import java.math.BigDecimal;
 
+import com.sap.spe.base.logging.UserexitLogger;
 import com.sap.spe.conversion.exc.ConversionMissingDataException;
 import com.sap.spe.pricing.customizing.PricingCustomizingConstants;
 import com.sap.spe.pricing.transactiondata.userexit.IPricingConditionUserExit;
@@ -13,68 +14,66 @@ public class ZValueFormula926 extends ValueFormulaAdapter {
   public BigDecimal overwriteConditionValue(IPricingItemUserExit pricingItem,
       IPricingConditionUserExit pricingCondition) {
 
-    /* No charge can be set either on the item in WebUI or automatically
-     * due to exclusion rules in Base Formula 903.
-     */
-//    String itemNoCharge = pricingItem.getAttributeValue(CintasConstants.Attributes.NOCHARGE) != null
-//            ? pricingItem.getAttributeValue(CintasConstants.Attributes.NOCHARGE) : "";
-//    String objectNoCharge = pricingItem.getObjectForUserExits(CintasConstants.Attributes.NOCHARGE) != null 
-//            ? (String)pricingItem.getObjectForUserExits(CintasConstants.Attributes.NOCHARGE) : "";
-//            
-//    if (itemNoCharge.equals("X") || objectNoCharge.equals("X")) {
-//        return new BigDecimal(0);
-//    }
+    UserexitLogger userexitLogger = new UserexitLogger(ZValueFormula926.class);
     
-    if (CintasConstants.IsItemNoCharge(pricingItem))
+    if (CintasConstants.IsItemNoCharge(pricingItem)) {
+      userexitLogger.writeLogDebug("Item is no charge.");
+      pricingCondition.setConditionRateValue(BigDecimal.ZERO);
       return BigDecimal.ZERO;
-    
-//    String docCurrency = pricingItem.getUserExitDocument().getDocumentCurrencyUnit().getUnitName();
-//    String condCurrency = docCurrency;
-//    
-//    if (docCurrency != null && docCurrency.equals("USD"))
-//        condCurrency = "US3";
-//    else if (docCurrency != null && docCurrency.equals("CAD"))
-//        condCurrency = "CD3";       
-    
-    String condCurrency = CintasConstants.GetPrecisionCurrency(pricingItem);
-    
-    BigDecimal subtotal1 = pricingItem.getSubtotal('1').getValue();
-    if (subtotal1.compareTo(new BigDecimal(0)) > 0) {
-        if (pricingCondition.getConditionBase().getValue().compareTo(new BigDecimal("0")) != 0) {
-            try {
-                pricingCondition.setConditionRate(subtotal1.divide(pricingCondition.getConditionBase().getValue(),3,BigDecimal.ROUND_HALF_UP), condCurrency);
-            }
-            catch (ConversionMissingDataException ex) {
-                pricingCondition.setConditionRateValue(subtotal1.divide(pricingCondition.getConditionBase().getValue(),3,BigDecimal.ROUND_HALF_UP));
-            }
-        }           
-        return subtotal1;
-    }
-    else {
-        return null;
     }
     
-//    if (CintasConstants.IsItemNoCharge(pricingItem))
-//      return BigDecimal.ZERO;
-//    
-//    BigDecimal subtotal = pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_M);
-//    subtotal = (subtotal.compareTo(BigDecimal.ZERO) == 0 ? pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_1) : subtotal); 
-//    
-//    if (subtotal.compareTo(BigDecimal.ZERO) > 0) {
-//      if (pricingCondition.getConditionBase().getValue().compareTo(BigDecimal.ZERO) != 0) {
-//        try {
-//          pricingCondition.setConditionRate(
-//              subtotal.divide(pricingCondition.getConditionBase().getValue(), 3, BigDecimal.ROUND_HALF_UP), 
-//              CintasConstants.GetPrecisionCurrency(pricingItem.getUserExitDocument().getDocumentCurrencyUnit().getUnitName()));
-//        }
-//        catch (ConversionMissingDataException ex) {
-//          pricingCondition.setConditionRateValue(subtotal.divide(pricingCondition.getConditionBase().getValue(),3,BigDecimal.ROUND_HALF_UP));
-//        }
-//      }			
-//      return subtotal;
-//    }
-//    else {
-//      return null;
-//    }
+    BigDecimal xkwert = BigDecimal.ZERO;
+    
+    BigDecimal subtotal5 = pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_5);
+    userexitLogger.writeLogDebug("subtotal5 = " + subtotal5);
+    if (subtotal5.compareTo(BigDecimal.ZERO) != 0) {
+      BigDecimal subtotal3 = pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_3);
+      userexitLogger.writeLogDebug("subtotal3 = " + subtotal3);
+      xkwert  = subtotal5.subtract(subtotal3);
+    } else {
+      //xkwert = BigDecimal.ZERO;
+    }
+    
+    BigDecimal xkbetr = BigDecimal.ZERO;
+    
+    if (xkwert.compareTo(BigDecimal.ZERO) == 0) {
+      //xkbetr = BigDecimal.ZERO;
+    } else {
+      if (CintasConstants.GetConditionRate(pricingItem, "ZMAN").compareTo(BigDecimal.ZERO) != 0) {
+        xkbetr = CintasConstants.GetConditionRate(pricingItem, "ZMAN");
+      }
+      else if (CintasConstants.GetSubtotalL(pricingItem).compareTo(BigDecimal.ZERO) != 0) {
+        if (CintasConstants.FindCondition(pricingItem, "ZPRA") == null) {
+          xkbetr = CintasConstants.GetSubtotalL(pricingItem).add(CintasConstants.GetConditionRate(pricingItem, "ZIPR"));
+        }
+        else {
+          xkbetr = CintasConstants.GetSubtotalL(pricingItem);
+        }
+      }
+      else if (CintasConstants.GetConditionRate(pricingItem, "ZIPR").compareTo(BigDecimal.ZERO) != 0) {
+          xkbetr = CintasConstants.GetConditionRate(pricingItem, "ZIPR");
+      }
+      else if (CintasConstants.GetConditionRate(pricingItem, "ZBOK").compareTo(BigDecimal.ZERO) != 0) {
+        if (CintasConstants.FindCondition(pricingItem, "ZDSS") == null) {
+          xkbetr = CintasConstants.GetConditionRate(pricingItem, "ZBOK");
+        }
+        else {
+          if (pricingCondition.getConditionBase().getValue().compareTo(BigDecimal.ZERO) != 0)
+            xkbetr = xkwert.divide(pricingCondition.getConditionBase().getValue());
+          else
+            xkbetr = BigDecimal.ZERO;
+        }
+      }
+    }
+    
+    userexitLogger.writeLogDebug("xkbetr = " + xkbetr);
+    userexitLogger.writeLogDebug("xkwert = " + xkwert);
+    try {
+      pricingCondition.setConditionRate(xkbetr, CintasConstants.GetPrecisionCurrency(pricingItem));
+    }
+    catch (ConversionMissingDataException ex) {
+      pricingCondition.setConditionRateValue(xkbetr);
+    }
+    return xkwert;
   }
 }
