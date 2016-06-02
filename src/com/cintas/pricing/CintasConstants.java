@@ -39,6 +39,7 @@ public class CintasConstants
     public static final String PRICE_PRODUCT            = "PRICE_PRODUCT"; //price reference material
     public static final String MATERIAL_GROUP           = "ZZ_MATKL";
     public static final String NOCHARGE                 = "ZZ_NOCHG";
+    public static final String ZEROQTY                  = "ZZ_ZEROQTY";
     public static final String SPECIAL_HANDLING         = "ZZ_SPCHAND";
     public static final String PACKAGE_CODE             = "ZZ_PACKCD";
     public static final String STOP_EXCLUSION           = "ZZ_STOPEXCL";
