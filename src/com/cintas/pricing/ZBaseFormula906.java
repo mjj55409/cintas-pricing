@@ -68,26 +68,36 @@ public class ZBaseFormula906 extends BaseFormulaAdapter {
         }
       }
     }
+    
+    // Begin CR983
+    String stopExclusion = CintasConstants.INITIAL;
+    if (conditionType.equals(CintasConstants.Conditions.INVOICE_DISCOUNT)) {
+      IPricingConditionUserExit zdsx = CintasConstants.FindCondition(pricingItem, "ZDSX");
+      if (zdsx != null) {
+        stopExclusion = zdsx.getConditionRecord().getVariableDataValue("ZZ_MEXCL");
+        if (stopExclusion.equals(CintasConstants.ABAP_TRUE)) {
+          pricingCondition.setConditionValue(
+              pricingCondition.getConditionValue().getValue()
+                .subtract(pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_3)));
+        }
+        else {
+          pricingCondition.setConditionRateValue(BigDecimal.ZERO);
+        }
+      }
+    }
+    //   End CR983
 
     /* Proceed with rule determination if something was found that matches the calculation
      *  type of the current condition.
      */
     if (ruleCondition != null && ruleCondition.getCalculationType() == pricingCondition.getCalculationType()) {
-      String stopExclusion = (ruleCondition.getConditionRecord().getVariableDataValue(CintasConstants.Attributes.STOP_EXCLUSION) != null ?
-          ruleCondition.getConditionRecord().getVariableDataValue(CintasConstants.Attributes.STOP_EXCLUSION) : CintasConstants.INITIAL);
+      stopExclusion = (ruleCondition.getConditionRecord().getVariableDataValue(CintasConstants.Attributes.STOP_EXCLUSION) != null ?
+          ruleCondition.getConditionRecord().getVariableDataValue(CintasConstants.Attributes.STOP_EXCLUSION) : stopExclusion);
       BigDecimal priceMin = (ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.PRICE_MIN) != null ?
           new BigDecimal(ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.PRICE_MIN)) : new BigDecimal("0"));
       BigDecimal priceMax = (ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.PRICE_MAX) != null ?
           new BigDecimal(ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.PRICE_MAX)) : new BigDecimal("0"));	
 
-      // Improper storage of price min/price max fields when the record currency is USD
-//      if (ruleCondition.getCalculationType() == PricingCustomizingConstants.CalculationType.FIXED_AMOUNT) {
-//        if (ruleCondition.getConditionRate().getUnitName().equals(CintasConstants.Currency.US) || 
-//            ruleCondition.getConditionRate().getUnitName().equals(CintasConstants.Currency.CA)) {
-//          priceMin = priceMin.multiply(BigDecimal.TEN);
-//          priceMax = priceMax.multiply(BigDecimal.TEN);
-//        }
-//      }
 
       if (stopExclusion.equals(CintasConstants.ABAP_TRUE)) {
         pricingCondition.setConditionRateValue(BigDecimal.ZERO);
