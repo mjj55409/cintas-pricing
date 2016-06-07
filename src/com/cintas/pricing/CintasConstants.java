@@ -187,7 +187,31 @@ public class CintasConstants
     return false;
   }
 
-  public static boolean IsRentalProduct(IConditionFindingManagerUserExit item)
+  public static boolean IsAncillaryMinimum(IConditionFindingManagerUserExit item) {
+    if (IsProductAncillary(item))
+       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.MINIMUM)))
+        return true;
+
+    return false;
+  }
+
+  public static boolean IsAncillaryInsurance(IConditionFindingManagerUserExit item) {
+    if (IsProductAncillary(item))
+       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.INSURANCE)))
+        return true;
+
+    return false;
+  }
+
+  public static boolean IsAncillaryFreight(IConditionFindingManagerUserExit item) {
+    if (IsProductAncillary(item))
+       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.FREIGHT)))
+        return true;
+
+    return false;
+  }
+
+ public static boolean IsRentalProduct(IConditionFindingManagerUserExit item)
   {
     return (item.getAttributeValue(Attributes.USAGE).equals(Usage.RENTAL));
   }
