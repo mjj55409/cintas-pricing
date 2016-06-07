@@ -36,10 +36,31 @@ public class ZBaseFormula906 extends BaseFormulaAdapter {
       ruleConditionType = CintasConstants.Conditions.Rules.SERVICE_CHARGE;
     }
     else if (conditionType.equals(CintasConstants.Conditions.INVOICE_DISCOUNT)) {
+      // Begin CR983
+      String stopExclusion = CintasConstants.INITIAL;
+      if (conditionType.equals(CintasConstants.Conditions.INVOICE_DISCOUNT)) {
+        IPricingConditionUserExit zdsx = CintasConstants.FindCondition(pricingItem, "ZDSX");
+        if (zdsx != null) {
+          stopExclusion = zdsx.getConditionRecord().getVariableDataValue("ZZ_MEXCL");
+          if (stopExclusion.equals(CintasConstants.ABAP_TRUE)) {
+            pricingCondition.setConditionValue(
+                pricingCondition.getConditionValue().getValue()
+                  .subtract(pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_3)));
+          }
+          else {
+            pricingCondition.setInactive(PricingCustomizingConstants.InactiveFlag.INVISIBLE);
+            return BigDecimal.ZERO;
+          }
+        }
+      }
+      //   End CR983
       ruleConditionType = CintasConstants.Conditions.Rules.INVOICE_DISCOUNT;
     }
     else if (conditionType.equals(CintasConstants.Conditions.SIZE_PREMIUM)) {
       ruleConditionType = CintasConstants.Conditions.Rules.SIZE_PREMIUM;
+    }
+    else if (conditionType.equals(CintasConstants.Conditions.INSURANCE_CHARGE)) {
+      ruleConditionType = CintasConstants.Conditions.Rules.INSURANCE_CHG;
     }
     else {
       /* Relies on looking at XKOMV-STUNB (lower limit of procedure step numbers for condition base)
@@ -69,30 +90,13 @@ public class ZBaseFormula906 extends BaseFormulaAdapter {
       }
     }
     
-    // Begin CR983
-    String stopExclusion = CintasConstants.INITIAL;
-    if (conditionType.equals(CintasConstants.Conditions.INVOICE_DISCOUNT)) {
-      IPricingConditionUserExit zdsx = CintasConstants.FindCondition(pricingItem, "ZDSX");
-      if (zdsx != null) {
-        stopExclusion = zdsx.getConditionRecord().getVariableDataValue("ZZ_MEXCL");
-        if (stopExclusion.equals(CintasConstants.ABAP_TRUE)) {
-          pricingCondition.setConditionValue(
-              pricingCondition.getConditionValue().getValue()
-                .subtract(pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_3)));
-        }
-        else {
-          pricingCondition.setConditionRateValue(BigDecimal.ZERO);
-        }
-      }
-    }
-    //   End CR983
 
     /* Proceed with rule determination if something was found that matches the calculation
      *  type of the current condition.
      */
     if (ruleCondition != null && ruleCondition.getCalculationType() == pricingCondition.getCalculationType()) {
-      stopExclusion = (ruleCondition.getConditionRecord().getVariableDataValue(CintasConstants.Attributes.STOP_EXCLUSION) != null ?
-          ruleCondition.getConditionRecord().getVariableDataValue(CintasConstants.Attributes.STOP_EXCLUSION) : stopExclusion);
+      String stopExclusion = (ruleCondition.getConditionRecord().getVariableDataValue(CintasConstants.Attributes.STOP_EXCLUSION) != null ?
+          ruleCondition.getConditionRecord().getVariableDataValue(CintasConstants.Attributes.STOP_EXCLUSION) : CintasConstants.INITIAL);
       BigDecimal priceMin = (ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.PRICE_MIN) != null ?
           new BigDecimal(ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.PRICE_MIN)) : new BigDecimal("0"));
       BigDecimal priceMax = (ruleCondition.getConditionRecord().getVariableKeyValue(CintasConstants.Attributes.PRICE_MAX) != null ?
