@@ -21,7 +21,8 @@ public class ZRequirement915 extends RequirementAdapter {
         return false;
 
       if (CintasConstants.IsProductAncillary(item))
-        return false;
+        if (CintasConstants.IsAncillaryInsurance(item) || CintasConstants.IsAncillaryFreight(item)) //CR938
+          return false;
 
     } 
     else {

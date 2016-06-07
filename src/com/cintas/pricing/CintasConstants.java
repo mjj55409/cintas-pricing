@@ -118,13 +118,14 @@ public class CintasConstants
     
     public static final class Rules {
       public static final String AGREEMENT_PRICE    = "ZPRR";
-      public static final String INVOICE_DISCOUNT   = "ZRDI";
-      public static final String INSURANCE_PCT_INV  = "ZRPI";
       public static final String NONCOMPLIANCE      = "ZNCR";
       public static final String QTY_RESTRICTION    = "ZQTR";
       public static final String SERVICE_CHARGE     = "ZRSV";
       public static final String STOP_MIN           = "ZSTR";
       public static final String INSURANCE          = "ZIRL";
+      public static final String INSURANCE_CHG      = "ZRIC";
+      public static final String INSURANCE_PCT_INV  = "ZRPI";
+      public static final String INVOICE_DISCOUNT   = "ZRDI";
       public static final String SIZE_PREMIUM       = "ZRSP";
       public static final String SURCHARGE          = "ZRSC";
     }
@@ -187,7 +188,31 @@ public class CintasConstants
     return false;
   }
 
-  public static boolean IsRentalProduct(IConditionFindingManagerUserExit item)
+  public static boolean IsAncillaryMinimum(IConditionFindingManagerUserExit item) {
+    if (IsProductAncillary(item))
+       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.MINIMUM)))
+        return true;
+
+    return false;
+  }
+
+  public static boolean IsAncillaryInsurance(IConditionFindingManagerUserExit item) {
+    if (IsProductAncillary(item))
+       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.INSURANCE)))
+        return true;
+
+    return false;
+  }
+
+  public static boolean IsAncillaryFreight(IConditionFindingManagerUserExit item) {
+    if (IsProductAncillary(item))
+       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.FREIGHT)))
+        return true;
+
+    return false;
+  }
+
+ public static boolean IsRentalProduct(IConditionFindingManagerUserExit item)
   {
     return (item.getAttributeValue(Attributes.USAGE).equals(Usage.RENTAL));
   }
