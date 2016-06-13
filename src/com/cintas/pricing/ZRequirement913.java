@@ -13,44 +13,6 @@ public class ZRequirement913 extends RequirementAdapter {
 	  if (CintasConstants.IsProductAncillary(item))
 	    return false;
 
-	  /*
-	   * PROBLEM: ZIPD and ZIRL are not determined at the time that this requirement is run!!!
-	   * That means that the code to retrieve insurance program information is totally broken.
-	   * 
-		// Type cast item to get access to pricing condition table
-		IPricingItemUserExit pricingItem = (IPricingItemUserExit)item;
-
-		// Initialize values that are stored on other condition records
-		String insuranceProgram = "";
-		String makeupExclusion = "";
-		String trimExclusion = "";
-
-
-		// Get condition type ZIPD from the conditions table
-		IPricingConditionUserExit[] conditions = pricingItem.getUserExitConditions();
-		for (int i=0; i<conditions.length; i++) {
-			String conditionType = conditions[i].getConditionTypeName();
-			if (conditionType != null && conditionType.equals("ZIPD")) {
-				insuranceProgram = conditions[i].getConditionRecord().getVariableDataValue("ZZ_INSURP") != null ? conditions[i].getConditionRecord().getVariableDataValue("ZZ_INSURP") : "";
-			}
-			if (conditionType != null && conditionType.equals("ZIRL")) {
-				// Allow ZIRL record to override insurance program from ZIPD
-				String ZIRLInsuranceProgram = conditions[i].getConditionRecord().getVariableDataValue("ZZ_INSURP");
-				if (ZIRLInsuranceProgram != null && !ZIRLInsuranceProgram.equals(""))
-					insuranceProgram = ZIRLInsuranceProgram;
-
-				makeupExclusion = conditions[i].getConditionRecord().getVariableDataValue("ZZ_MUINS_EX") != null ? conditions[i].getConditionRecord().getVariableDataValue("ZZ_MUINS_EX") : "";
-				trimExclusion = conditions[i].getConditionRecord().getVariableDataValue("ZZ_TRINS_EX") != null ? conditions[i].getConditionRecord().getVariableDataValue("ZZ_TRINS_EX") : "";
-				break;
-			}
-		}
-
-		// Allow line item insurance program to override determined value
-		String itemInsuranceProgram = item.getAttributeValue("INSURANCE PROGRAM") != null ? item.getAttributeValue("INSURANCE PROGRAM") : "";
-		if (!itemInsuranceProgram.equals(""))
-			insuranceProgram = itemInsuranceProgram;
-	   */
-
 	  // Get additional information from item communication structure
 	  String insuranceIndicator = item.getAttributeValue(CintasConstants.Attributes.INSURANCE);
 	  String usageCode = item.getAttributeValue(CintasConstants.Attributes.USAGE);
@@ -172,6 +134,14 @@ public class ZRequirement913 extends RequirementAdapter {
 	      return false;
 	    }
 	  }
+	  // Insurance adjustment
+	  else if (conditionType.equals(CintasConstants.Conditions.INSURANCE_ADJUSTMENT)) {
+	    if (insuranceProgram.equals(CintasConstants.INITIAL))
+	      return false;
+	    if (makeupInsurance.equals(CintasConstants.ABAP_TRUE) || trimInsurance.equals(CintasConstants.ABAP_TRUE))
+	      return false;
+	  }
+	  // Insurance adjustment
 
 	  return true;
 	}
