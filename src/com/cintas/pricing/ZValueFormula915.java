@@ -10,7 +10,7 @@ public class ZValueFormula915 extends ValueFormulaAdapter {
 
   public BigDecimal overwriteConditionValue(IPricingItemUserExit pricingItem,
       IPricingConditionUserExit pricingCondition) {
-
+    
     return roundConditionValue(
         pricingCondition.getConditionRate().getValue(), 
         pricingCondition.getConditionBase().getValue(),

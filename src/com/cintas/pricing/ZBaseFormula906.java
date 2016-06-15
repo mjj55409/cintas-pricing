@@ -37,15 +37,20 @@ public class ZBaseFormula906 extends BaseFormulaAdapter {
     }
     else if (conditionType.equals(CintasConstants.Conditions.INVOICE_DISCOUNT)) {
       // Begin CR983
-      String stopExclusion = CintasConstants.INITIAL;
+      String insuranceExclusion = CintasConstants.INITIAL;
       if (conditionType.equals(CintasConstants.Conditions.INVOICE_DISCOUNT)) {
         IPricingConditionUserExit zdsx = CintasConstants.FindCondition(pricingItem, "ZDSX");
         if (zdsx != null) {
-          stopExclusion = zdsx.getConditionRecord().getVariableDataValue("ZZ_MEXCL");
-          if (stopExclusion.equals(CintasConstants.ABAP_TRUE)) {
-            pricingCondition.setConditionValue(
-                pricingCondition.getConditionValue().getValue()
-                  .subtract(pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_3)));
+          insuranceExclusion = zdsx.getConditionRecord().getVariableDataValue("ZZ_MEXCL");
+          //BigDecimal subtotal3 = pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_3);
+          BigDecimal subtotal3 = zdsx.getConditionValue().getValue();
+          userexitLogger.writeLogDebug("Insurance subtotal = " + subtotal3);
+          userexitLogger.writeLogDebug("Insurance exclusion = " + insuranceExclusion);
+
+          if (insuranceExclusion.equals(CintasConstants.ABAP_TRUE)) {
+            BigDecimal xkwart = pricingCondition.getConditionBase().getValue();
+            pricingCondition.setConditionBaseValue(xkwart.subtract(subtotal3));
+            return null;
           }
           else {
             pricingCondition.setInactive(PricingCustomizingConstants.InactiveFlag.INVISIBLE);

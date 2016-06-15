@@ -29,19 +29,23 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
     if (!CintasConstants.IsProductAncillary(pricingItem) || !CintasConstants.IsRentalProduct(pricingItem))
       return "";
 
-    String accountAssignmentGroup = pricingItem.getAttributeValue(CintasConstants.Attributes.ACCOUNT_ASSIGNMENT_GROUP);
+    //String accountAssignmentGroup = pricingItem.getAttributeValue(CintasConstants.Attributes.ACCOUNT_ASSIGNMENT_GROUP);
     char relevantSubtotal;
 
-    if (accountAssignmentGroup.equals(CintasConstants.AccountAssignment.INSURANCE)) {
+    if (CintasConstants.IsAncillaryInsurance(pricingItem)) {
+    //if (accountAssignmentGroup.equals(CintasConstants.AccountAssignment.INSURANCE)) {
       relevantSubtotal = PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_E;
     }
-    else if (accountAssignmentGroup.equals(CintasConstants.AccountAssignment.SERVICE)) {
+    else if (CintasConstants.IsAncillaryService(pricingItem)) {
+    //else if (accountAssignmentGroup.equals(CintasConstants.AccountAssignment.SERVICE)) {
       relevantSubtotal = PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_J;
     }
-    else if (accountAssignmentGroup.equals(CintasConstants.AccountAssignment.MINIMUM)) {
+    else if (CintasConstants.IsAncillaryMinimum(pricingItem)) {
+    //else if (accountAssignmentGroup.equals(CintasConstants.AccountAssignment.MINIMUM)) {
       relevantSubtotal = PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_G;
     }
-    else if (accountAssignmentGroup.equals(CintasConstants.AccountAssignment.FREIGHT)) {
+    else if (CintasConstants.IsAncillaryFreight(pricingItem)) {
+    //else if (accountAssignmentGroup.equals(CintasConstants.AccountAssignment.FREIGHT)) {
       relevantSubtotal = PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_D;
     }
     else {
@@ -65,37 +69,6 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
     for (int i=0; i<conditions.length; i++) {
       String conditionType = (conditions[i].getConditionTypeName() != null 
           ? conditions[i].getConditionTypeName() : "");
-
-//      switch (relevantSubtotal) {
-//      case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_E:
-//        if (!conditionType.equals(CintasConstants.Conditions.INSURANCE_CHARGE) &&
-//            !conditionType.equals(CintasConstants.Conditions.INSURANCE_AUTOLR) &&
-//            !conditionType.equals(CintasConstants.Conditions.INSURANCE_PCT) &&
-//            !conditionType.equals(CintasConstants.Conditions.INSURANCE_MAKEUP) &&
-//            !conditionType.equals(CintasConstants.Conditions.INSURANCE_TRIM))
-//          continue;
-//        break;
-//
-//      case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_G:
-//        // Invoice Min/Max
-//        if (!conditionType.equals(CintasConstants.Conditions.SubTotals.AMOUNT_MIN_CHARGE))
-//          continue;
-//        break;
-//
-//      case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_D:
-//        // Freight Charges
-//        if (!conditionType.equals(CintasConstants.Conditions.BASE_PRICE))
-//          continue;
-//        break;
-//
-//      case PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_J:
-//        if (!conditionType.equals(CintasConstants.Conditions.SERVICE_CHARGE))
-//          continue;
-//        break;
-//
-//      default:
-//        continue;
-//      }
 
       if (relevantSubtotal == PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_E &&
           (conditionType.equals(CintasConstants.Conditions.INSURANCE_CHARGE) ||
@@ -128,7 +101,7 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
 
       if (_xkwart.compareTo(BigDecimal.ZERO) != 0 || _xkwert.compareTo(BigDecimal.ZERO) != 0) {
         if (conditions[i].getCalculationType() == PricingCustomizingConstants.CalculationType.PERCENTAGE && 
-            !accountAssignmentGroup.equals(CintasConstants.AccountAssignment.INSURANCE)) {
+            relevantSubtotal != PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_E) {
           // Percentage Condition (but not insurance)
           newValue = newValue.add(_xkwart);
         }

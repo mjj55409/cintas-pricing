@@ -30,12 +30,19 @@ public class ZBaseFormula907 extends BaseFormulaAdapter {
         break;
     }
     
+    if (ruleCondition != null) {
+      String exclusion = ruleCondition.getConditionRecord().getVariableKeyValue("ZZ_STOPEXCL");
+      exclusion = (exclusion == null ? CintasConstants.INITIAL : exclusion);
+      
+      if (exclusion.equals(CintasConstants.ABAP_TRUE)) {
+        userexitLogger.writeLogDebug("Exclusion is active.");
+        return BigDecimal.ZERO;
+      }
+    }
+
     BigDecimal kbetr = BigDecimal.ZERO;
     
-    if (pricingItem.getAttributeValue(CintasConstants.Attributes.STOP_EXCLUSION).equals(CintasConstants.ABAP_TRUE)) {
-      userexitLogger.writeLogDebug("Exclusion is active.");
-    }
-    else if (ruleCondition != null || chargeCondition != null) {
+    if (ruleCondition != null || chargeCondition != null) {
       if (ruleCondition != null && ruleCondition.getConditionValue().getValue().compareTo(BigDecimal.ZERO) != 0) {
         kbetr = ruleCondition.getConditionValue().getValue();
       }

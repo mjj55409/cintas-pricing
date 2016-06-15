@@ -19,6 +19,19 @@ public class ZValueFormula921 extends ValueFormulaAdapter {
 
     // Set condition rate if base value is present
     if (pricingCondition.getConditionBase().getValue().compareTo(BigDecimal.ZERO) > 0) {
+      
+      // Defect 4971
+      if (subtotalH.compareTo(BigDecimal.ZERO) == 0) {
+        try {
+          pricingCondition.setConditionRate(CintasConstants.ONE_PENNY, CintasConstants.GetPrecisionCurrency(pricingItem));
+        }
+        catch (Exception ex) {
+          pricingCondition.setConditionRateValue(CintasConstants.ONE_PENNY);
+        }
+        return BigDecimal.ZERO;
+      }
+      //\\ Defect 4971
+      
       BigDecimal subtotal1 = pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_1);
       BigDecimal ziprValue = CintasConstants.GetConditionValue(pricingItem, CintasConstants.Conditions.INITIAL_PRICE);
       BigDecimal zbokValue = CintasConstants.GetConditionValue(pricingItem, CintasConstants.Conditions.BOOK_PRICE);
