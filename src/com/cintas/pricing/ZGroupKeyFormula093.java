@@ -76,8 +76,10 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
               conditionType.equals(CintasConstants.Conditions.INSURANCE_PCT) ||
               conditionType.equals(CintasConstants.Conditions.INSURANCE_MAKEUP) ||
               conditionType.equals(CintasConstants.Conditions.INSURANCE_TRIM))) {
-        _xkwart = conditions[i].getConditionBase().getValue();
-        _xkwert = conditions[i].getConditionValue().getValue();
+        if (!conditions[i].isStatistical()) {
+          _xkwart = conditions[i].getConditionBase().getValue();
+          _xkwert = conditions[i].getConditionValue().getValue();
+        }
       }
       else if (relevantSubtotal == PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_G && 
           conditionType.equals(CintasConstants.Conditions.SubTotals.AMOUNT_MIN_CHARGE)) {
