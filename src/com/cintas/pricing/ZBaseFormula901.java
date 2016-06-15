@@ -14,6 +14,9 @@ public class ZBaseFormula901 extends BaseFormulaAdapter {
       IPricingConditionUserExit pricingCondition) {
 
     UserexitLogger userexitLogger = new UserexitLogger(ZBaseFormula901.class);
+    
+    if (CintasConstants.IsItemNoCharge(pricingItem))      
+      pricingCondition.setStatistical(true);
 
     // New logic for min/max rules in Auto-LR (CR419).
     BigDecimal priceMin = new BigDecimal("0");

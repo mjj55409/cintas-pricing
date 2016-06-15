@@ -358,4 +358,8 @@ public static final BigDecimal GetConditionValue(IPricingItemUserExit item, Stri
     return INSURANCE_CONDITIONS.contains(conditionName);
   }
   
+  public static final boolean IsStringInitial(String string) {
+    return string == null || string.equals(CintasConstants.INITIAL);
+  }
+  
 }

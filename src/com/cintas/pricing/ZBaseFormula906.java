@@ -27,6 +27,10 @@ public class ZBaseFormula906 extends BaseFormulaAdapter {
     if (conditionType.equals(CintasConstants.Conditions.ITEM_DISCOUNT) && CintasConstants.IsItemNoCharge(pricingItem)) {
       return BigDecimal.ZERO;
     }
+    else if (CintasConstants.IsItemNoCharge(pricingItem)) {
+      pricingCondition.setStatistical(true);
+    }
+
 
     IPricingConditionUserExit ruleCondition = null;		
     String ruleConditionType = null;
@@ -154,7 +158,7 @@ public class ZBaseFormula906 extends BaseFormulaAdapter {
     }
 
     // end CR638
-
+    
     return null;
   }
 }
