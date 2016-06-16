@@ -355,6 +355,8 @@ public static final BigDecimal GetConditionValue(IPricingItemUserExit item, Stri
   }
   
   public static final boolean IsInsuranceCondition(String conditionName) {
+    if (conditionName == null)
+      conditionName = INITIAL;
     return INSURANCE_CONDITIONS.contains(conditionName);
   }
   
