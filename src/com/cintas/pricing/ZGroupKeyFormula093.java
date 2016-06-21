@@ -71,11 +71,7 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
           ? conditions[i].getConditionTypeName() : "");
 
       if (relevantSubtotal == PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_E &&
-          (conditionType.equals(CintasConstants.Conditions.INSURANCE_CHARGE) ||
-              conditionType.equals(CintasConstants.Conditions.INSURANCE_AUTOLR) ||
-              conditionType.equals(CintasConstants.Conditions.INSURANCE_PCT) ||
-              conditionType.equals(CintasConstants.Conditions.INSURANCE_MAKEUP) ||
-              conditionType.equals(CintasConstants.Conditions.INSURANCE_TRIM))) {
+          CintasConstants.IsInsuranceCondition(conditionType)) {
         userexitLogger.writeLogDebug("Condition = " + conditionType);
         if (!conditions[i].isStatistical()) {
           userexitLogger.writeLogDebug("...not statistical...");
