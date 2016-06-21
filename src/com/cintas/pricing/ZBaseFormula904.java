@@ -21,6 +21,8 @@ public class ZBaseFormula904 extends BaseFormulaAdapter {
     
     if (CintasConstants.IsItemNoCharge(pricingItem)) {
       
+      userexitLogger.writeLogDebug("Item is no charge.");
+      
       pricingCondition.setStatistical(true);
       
       if (!CintasConstants.IsAncillaryInsurance(pricingItem)) {
@@ -40,15 +42,22 @@ public class ZBaseFormula904 extends BaseFormulaAdapter {
           }
         }
         
-        userexitLogger.writeLogDebug("Condition base = " + xkwart);
-        userexitLogger.writeLogDebug("Condition rate = " + xkwert);
-
-        pricingCondition.setConditionBaseValue(xkwart);
+      }
+      else {
+        // In CRM, subtotal2 is zero for ancillary insurance (because statistical prices), 
+        // so we'll get our base from the calculated price line instead
+        xkwart = CintasConstants.GetConditionValue(pricingItem, CintasConstants.Conditions.CALCULATED_PRICE);
       }
       
+      userexitLogger.writeLogDebug("Condition base = " + xkwart);
+      userexitLogger.writeLogDebug("Condition rate = " + xkwert);
+
+      pricingCondition.setConditionBaseValue(xkwart);
       pricingCondition.setConditionRateValue(xkwert);
     }
     else {
+      userexitLogger.writeLogDebug("Item is chargeable.");
+      
       if (!CintasConstants.IsAncillaryInsurance(pricingItem))
         pricingCondition.setInactive(PricingCustomizingConstants.InactiveFlag.INVISIBLE);
     }

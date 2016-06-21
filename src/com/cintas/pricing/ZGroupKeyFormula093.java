@@ -76,9 +76,21 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
               conditionType.equals(CintasConstants.Conditions.INSURANCE_PCT) ||
               conditionType.equals(CintasConstants.Conditions.INSURANCE_MAKEUP) ||
               conditionType.equals(CintasConstants.Conditions.INSURANCE_TRIM))) {
+        userexitLogger.writeLogDebug("Condition = " + conditionType);
         if (!conditions[i].isStatistical()) {
-          _xkwart = conditions[i].getConditionBase().getValue();
-          _xkwert = conditions[i].getConditionValue().getValue();
+          userexitLogger.writeLogDebug("...not statistical...");
+          if (conditions[i].getConditionBase() != null)
+            _xkwart = conditions[i].getConditionBase().getValue();
+          else
+            _xkwart = BigDecimal.ZERO;
+          
+          if (conditions[i].getConditionValue() != null)
+            _xkwert = conditions[i].getConditionValue().getValue();
+          else
+            _xkwert = BigDecimal.ZERO;
+          
+          userexitLogger.writeLogDebug("xkwart = " + _xkwart);
+          userexitLogger.writeLogDebug("xkwert = " + _xkwert);
         }
       }
       else if (relevantSubtotal == PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_G && 
@@ -100,7 +112,7 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
         _xkwart = BigDecimal.ZERO;
         _xkwert = BigDecimal.ZERO;
       }
-
+      
       if (_xkwart.compareTo(BigDecimal.ZERO) != 0 || _xkwert.compareTo(BigDecimal.ZERO) != 0) {
         if (conditions[i].getCalculationType() == PricingCustomizingConstants.CalculationType.PERCENTAGE && 
             relevantSubtotal != PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_E) {
@@ -110,16 +122,18 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
         else {
           // Not a Percentage Condition
           newValue = newValue.add(_xkwert);
+          userexitLogger.writeLogDebug("Running total for " + relevantSubtotal + " = " + newValue);
         }
       }
+      
     }
     
-    userexitLogger.writeLogDebug("Group value = " + newValue);
-
     if (newValue.compareTo(new BigDecimal(0)) > 0) {
       pricingCondition.setConditionRateValue(newValue);
       pricingCondition.setConditionValue(newValue);
     }
+
+    userexitLogger.writeLogDebug("Group value = " + newValue);
 
     return groupKey;
   }

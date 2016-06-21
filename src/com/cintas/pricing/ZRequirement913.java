@@ -1,5 +1,6 @@
 package com.cintas.pricing;
 
+import com.sap.spe.base.logging.UserexitLogger;
 import com.sap.spe.condmgnt.customizing.IAccess;
 import com.sap.spe.condmgnt.customizing.IStep;
 import com.sap.spe.condmgnt.finding.userexit.IConditionFindingManagerUserExit;
@@ -10,6 +11,8 @@ public class ZRequirement913 extends RequirementAdapter {
 	public boolean checkRequirement(IConditionFindingManagerUserExit item,
 			IStep step, IAccess access) {
 		
+	  UserexitLogger userexitLogger = new UserexitLogger(ZRequirement913.class);
+	  
 	  if (CintasConstants.IsProductAncillary(item))
 	    return false;
 
@@ -136,9 +139,13 @@ public class ZRequirement913 extends RequirementAdapter {
 	  }
 	  // Insurance adjustment
 	  else if (conditionType.equals(CintasConstants.Conditions.INSURANCE_ADJUSTMENT)) {
-	    if (insuranceProgram.equals(CintasConstants.INITIAL))
-	      return false;
-	    if (makeupInsurance.equals(CintasConstants.ABAP_TRUE) || trimInsurance.equals(CintasConstants.ABAP_TRUE))
+	    userexitLogger.writeLogDebug("Condition type = ZINA");
+        userexitLogger.writeLogDebug("Ins Program = " + insuranceProgram);
+        userexitLogger.writeLogDebug("Makeup Ins = " + makeupInsurance);
+        userexitLogger.writeLogDebug("Trim Ins = " + trimInsurance);
+	    if (insuranceProgram.equals(CintasConstants.INITIAL) && 
+	        !makeupInsurance.equals(CintasConstants.ABAP_TRUE) && 
+	        !trimInsurance.equals(CintasConstants.ABAP_TRUE))
 	      return false;
 	  }
 	  // Insurance adjustment

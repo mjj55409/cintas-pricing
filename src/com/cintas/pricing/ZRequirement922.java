@@ -20,6 +20,9 @@ public class ZRequirement922 extends RequirementAdapter {
     userexitLogger.writeLogDebug("Step = " + step.getStepNumber());
     userexitLogger.writeLogDebug("Condition = " + _name);
     
+    if (CintasConstants.IsProductAncillary(item))
+      userexitLogger.writeLogDebug("Product is ancillary.");
+    
     if (_name.equals(CintasConstants.Conditions.SubTotals.AMOUNT_MIN_CHARGE)) {
       if (!CintasConstants.IsAncillaryService(item))
         if (CintasConstants.IsProductAncillary(item))
@@ -37,6 +40,7 @@ public class ZRequirement922 extends RequirementAdapter {
         return false;
     }
     
+    userexitLogger.writeLogDebug("Requirement satisfied.");
     return true;
   }
 }
