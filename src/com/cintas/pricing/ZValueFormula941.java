@@ -29,8 +29,8 @@ public class ZValueFormula941 extends ValueFormulaAdapter {
     userexitLogger.writeLogDebug("xkbetr = " + xkbetr);
     
     xkbetr = xkbetr.add(CintasConstants.GetConditionRate(pricingItem, CintasConstants.Conditions.BASE_PRICE));
-    if (xkbetr.compareTo(CintasConstants.ONE_PENNY) == 0) // needed because of defect4971 fix in Val921
-      xkbetr = BigDecimal.ZERO;
+//    if (xkbetr.compareTo(CintasConstants.ONE_PENNY) == 0) // needed because of defect4971 fix in Val921
+//      xkbetr = BigDecimal.ZERO;
     userexitLogger.writeLogDebug("SizePremium + BasePrice = " + xkbetr);
     lv_kwert = xkbetr.multiply(pricingCondition.getConditionBase().getValue());
     userexitLogger.writeLogDebug("SizePremium + BasePrice (extended) = " + lv_kwert);
