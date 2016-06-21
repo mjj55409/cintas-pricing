@@ -53,26 +53,30 @@ public class ZGroupKeyFormula092 extends GroupKeyFormulaAdapter {
                 if (_cond[x].getConditionRecordId().equals(conditions[i].getConditionRecordId())) {
                   userexitLogger.writeLogDebug("...found condition record...");
                   
-                  if (_cond[i].getConditionBase() != null)
-                    itemBase = itemBase.add(_cond[i].getConditionBase().getValue());
-                  if (_cond[i].getConditionValue() != null)
-                    itemValue = itemValue.add(_cond[i].getConditionValue().getValue());
-                  if (_cond[i].getConditionRate() != null)
-                      itemRate = itemRate.add(_cond[i].getConditionRate().getValue());
-                  
-                  if (itemBase.compareTo(BigDecimal.ZERO) != 0 &&
-                      itemValue.compareTo(BigDecimal.ZERO) != 0 &&
-                      itemRate.compareTo(BigDecimal.ZERO) != 0) {
+                  if (!_cond[x].isStatistical()) {
                     
-                    itemExt = itemBase.multiply(itemRate);
-                    if (_cond[i].getCalculationType() == 'A')
-                      itemExt = itemExt.divide(CintasConstants.ONE_HUNDRED);
+                    if (_cond[i].getConditionBase() != null)
+                      itemBase = itemBase.add(_cond[i].getConditionBase().getValue());
+                    if (_cond[i].getConditionValue() != null)
+                      itemValue = itemValue.add(_cond[i].getConditionValue().getValue());
+                    if (_cond[i].getConditionRate() != null)
+                        itemRate = itemRate.add(_cond[i].getConditionRate().getValue());
+                    
+                    if (itemBase.compareTo(BigDecimal.ZERO) != 0 &&
+                        itemValue.compareTo(BigDecimal.ZERO) != 0 &&
+                        itemRate.compareTo(BigDecimal.ZERO) != 0) {
+                      
+                      itemExt = itemBase.multiply(itemRate);
+                      if (_cond[i].getCalculationType() == 'A')
+                        itemExt = itemExt.divide(CintasConstants.ONE_HUNDRED);
+                    }
+                      
+                    userexitLogger.writeLogDebug("Item rate  = " + itemRate);               
+                    userexitLogger.writeLogDebug("Item base  = " + itemBase);
+                    userexitLogger.writeLogDebug("Item value = " + itemValue);
+                    userexitLogger.writeLogDebug("Item extended = " + itemExt);
+                    
                   }
-                    
-                  userexitLogger.writeLogDebug("Item rate  = " + itemRate);               
-                  userexitLogger.writeLogDebug("Item base  = " + itemBase);
-                  userexitLogger.writeLogDebug("Item value = " + itemValue);
-                  userexitLogger.writeLogDebug("Item extended = " + itemExt);
                 }
               }
             }
