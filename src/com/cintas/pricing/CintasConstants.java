@@ -17,6 +17,8 @@ public class CintasConstants
   
   public static final BigDecimal ONE_PENNY                  = new BigDecimal("0.001");
   
+  public static final BigDecimal ONE_HUNDRED                = new BigDecimal("100");
+  
   public static final char       PRICE_EXCLUDED             = 'E';
   public static final char       PRICE_MINIMUM              = 'M';
   public static final char       PRICE_MAXIMUM              = 'X';
@@ -181,33 +183,33 @@ public class CintasConstants
   }
   
   public static boolean IsAncillaryService(IConditionFindingManagerUserExit item) {
-    if (IsProductAncillary(item))
-       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.SERVICE)))
-        return true;
+    //if (IsProductAncillary(item))
+    if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.SERVICE)))
+      return true;
 
     return false;
   }
 
   public static boolean IsAncillaryMinimum(IConditionFindingManagerUserExit item) {
-    if (IsProductAncillary(item))
-       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.MINIMUM)))
-        return true;
+    //if (IsProductAncillary(item))
+    if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.MINIMUM)))
+      return true;
 
     return false;
   }
 
   public static boolean IsAncillaryInsurance(IConditionFindingManagerUserExit item) {
-    if (IsProductAncillary(item))
-       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.INSURANCE)))
-        return true;
+    //if (IsProductAncillary(item))
+    if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.INSURANCE)))
+      return true;
 
     return false;
   }
 
   public static boolean IsAncillaryFreight(IConditionFindingManagerUserExit item) {
-    if (IsProductAncillary(item))
-       if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.FREIGHT)))
-        return true;
+    //if (IsProductAncillary(item))
+    if (item.getAttributeValue(Attributes.PRODUCT).equals(item.getAttributeValue(AncillaryMaterials.FREIGHT)))
+      return true;
 
     return false;
   }
@@ -310,6 +312,15 @@ public static final BigDecimal GetConditionValue(IPricingItemUserExit item, Stri
     return _value;
   }
  
+  public static final BigDecimal GetConditionBase(IPricingItemUserExit item, String conditionName) {
+    BigDecimal _value = BigDecimal.ZERO;
+    
+    if (FindCondition(item, conditionName) != null)
+      _value = FindCondition(item, conditionName).getConditionBase().getValue();
+    
+    return _value;
+  }
+ 
   public static final IPricingConditionUserExit FindCondition(IPricingItemUserExit item, String conditionName) {
     IPricingConditionUserExit _condition = null;
 
@@ -355,6 +366,8 @@ public static final BigDecimal GetConditionValue(IPricingItemUserExit item, Stri
   }
   
   public static final boolean IsInsuranceCondition(String conditionName) {
+    if (conditionName == null)
+      conditionName = INITIAL;
     return INSURANCE_CONDITIONS.contains(conditionName);
   }
   
