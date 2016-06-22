@@ -14,13 +14,18 @@ public class ZValueFormula921 extends ValueFormulaAdapter {
       IPricingConditionUserExit pricingCondition) {
     
     UserexitLogger userexitLogger = new UserexitLogger(ZValueFormula921.class);
+    
+    userexitLogger.writeLogDebug("*** Condition " + pricingCondition.getConditionTypeName() + " ***");
 
     BigDecimal subtotalH = pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_H);
     BigDecimal subtotal1 = pricingItem.getSubtotalAsBigDecimal(PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_1);
-    BigDecimal ziprValue = CintasConstants.GetConditionValue(pricingItem, CintasConstants.Conditions.INITIAL_PRICE);
-    BigDecimal zbokValue = CintasConstants.GetConditionValue(pricingItem, CintasConstants.Conditions.BOOK_PRICE);
+    BigDecimal ziprValue = CintasConstants.GetConditionRate(pricingItem, CintasConstants.Conditions.INITIAL_PRICE);
+    BigDecimal zbokValue = CintasConstants.GetConditionRate(pricingItem, CintasConstants.Conditions.BOOK_PRICE);
     BigDecimal zdssValue = CintasConstants.GetConditionValue(pricingItem, CintasConstants.Conditions.DIRECT_SALE_SURCHG);
     BigDecimal _kbetr = BigDecimal.ZERO;
+    
+    if (zbokValue.compareTo(CintasConstants.ONE_PENNY) == 0)
+      zbokValue = BigDecimal.ZERO;
     
     userexitLogger.writeLogDebug("Sub1 = " + subtotal1);
     userexitLogger.writeLogDebug("SubH = " + subtotalH);
@@ -28,13 +33,13 @@ public class ZValueFormula921 extends ValueFormulaAdapter {
     userexitLogger.writeLogDebug("ZBOK = " + zbokValue);
     userexitLogger.writeLogDebug("ZDSS = " + zdssValue);
     
-    if (subtotal1.compareTo(BigDecimal.ZERO) > 0) {
+    if (subtotal1.compareTo(BigDecimal.ZERO) != 0) {
       _kbetr = subtotal1;
     }
-    else if (ziprValue.compareTo(BigDecimal.ZERO) > 0) {
-      _kbetr = CintasConstants.GetConditionRate(pricingItem, CintasConstants.Conditions.INITIAL_PRICE);
+    else if (ziprValue.compareTo(BigDecimal.ZERO) != 0) {
+      _kbetr = ziprValue;
     }
-    else if (zbokValue.compareTo(BigDecimal.ZERO) > 0) {
+    else if (zbokValue.compareTo(BigDecimal.ZERO) != 0) {
       if (zdssValue.compareTo(BigDecimal.ZERO) == 0) {
         _kbetr = CintasConstants.GetConditionRate(pricingItem, CintasConstants.Conditions.BOOK_PRICE);
       }
