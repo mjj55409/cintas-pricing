@@ -21,7 +21,11 @@ public class ZPrepareVariants extends PricingPrepareFormulaAdapter {
         // Split at "/" into multiple fields
         String[] specialHandlingArray = specialHandlingValues[0].split("/");
         for (int i=0; i<specialHandlingArray.length; i++) {
-          String specialHandling = "H" + specialHandlingArray[i];
+          String specialHandling;
+//          if (specialHandlingArray[i].startsWith("H"))
+            specialHandling = specialHandlingArray[i];
+//          else
+//            specialHandling = "H" + specialHandlingArray[i];
           itemUserExitAccess.addVariantCondition(specialHandling, 1.0d, "Surcharge:" + specialHandling);
         }
       }

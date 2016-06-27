@@ -28,6 +28,8 @@ public class ZValueFormula916 extends ValueFormulaAdapter {
       if (conditionType != null && conditionType.equals(CintasConstants.Conditions.INITIAL_PRICE)) {
         ZIPR = conditions[i];
         ZIPRRate = ZIPR.getConditionRate().getValue();
+        if (ZIPRRate.compareTo(CintasConstants.ONE_PENNY) == 0)
+          ZIPRRate = BigDecimal.ZERO;
       }
       if (conditionType != null && conditionType.equals(CintasConstants.Conditions.Rules.AGREEMENT_PRICE)) {
         ZPRR = conditions[i];
@@ -65,6 +67,9 @@ public class ZValueFormula916 extends ValueFormulaAdapter {
     // Determine Condition Value
     if (pricingCondition.getConditionClass() == PricingCustomizingConstants.ConditionClass.DISCOUNT && ZIPR != null) {		
       BigDecimal ZIPRValue = ZIPR.getConditionValue().getValue();
+      if (ZIPRValue.compareTo(CintasConstants.ONE_PENNY) == 0)
+        ZIPRValue = BigDecimal.ZERO;
+      
       BigDecimal conditionValue = pricingCondition.getConditionRate().getValue().multiply(pricingCondition.getConditionBase().getValue());
 
       switch (minmaxIndicator) {

@@ -69,7 +69,7 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
     for (int i=0; i<conditions.length; i++) {
       String conditionType = (conditions[i].getConditionTypeName() != null 
           ? conditions[i].getConditionTypeName() : "");
-
+      
       if (relevantSubtotal == PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_E &&
           CintasConstants.IsInsuranceCondition(conditionType)) {
         userexitLogger.writeLogDebug("Condition = " + conditionType);
@@ -87,6 +87,10 @@ public class ZGroupKeyFormula093 extends GroupKeyFormulaAdapter {
           
           userexitLogger.writeLogDebug("xkwart = " + _xkwart);
           userexitLogger.writeLogDebug("xkwert = " + _xkwert);
+        } 
+        else {
+          _xkwart = BigDecimal.ZERO;
+          _xkwert = BigDecimal.ZERO;
         }
       }
       else if (relevantSubtotal == PricingCustomizingConstants.ConditionSubtotal.SUBTOTAL_G && 
